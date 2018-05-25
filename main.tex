@@ -1,5 +1,45 @@
 \documentclass{article}
+
+\title{
+Distributed AMIE+\\
+\large Preliminary Notes\\
+of the Thesis Project\\
+}
+\author{Omar Trinidad Guti\'errez M\'endez}
+
+\usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \begin{document}
-(Type your content here.)
+\maketitle
+
+\section{Introduction}
+
+Knowledge bases (KB) have the purpose of representing and store knowledge in a machine-readable format. Some well-known KBs are DBpedia, NELL, YAGO, or Freebase. A usual task executed in these databases is mining logical rules, that is, find unknown relationships between entities. For example,
+
+\begin{equation*}
+livesIn(a, x) and marriedTo(a, b) => livesIn(b, x) 
+\end{equation*}
+
+However,  these databases are designed under the idea of Open World Assumption (OWA), that means, if the database does not contain a fact, we are not assuming that this fact is false, as happens under the Closed World Assumption (CWA).  
+
+Finding these relations in huge datasets, and under the OWA setting is a challenging task. This problem was addressed by Galárraga et al. who proposed Association Rule Mining under Incomplete Evidence (AMIE) and later suggested an improved version of the same method that they simple named AMIE+. 
+
+The purpose of the current project is to explore AMIE+ and implement it in a distributed context.
+
+\subsection{Theory}
+
+Knowledge Bases are collections of facts; every fact is represented by a relation between a subject and object r(s, o).
+
+\subsection{AMIE}
+
+Inside AMIE, the Partial Completeness Assumption (PCA) was used to guess the so-called counterexamples for rules. 
+
+\subsection{AMIE plus}
+
+In AMIE+ it was aggregated pruning strategies and approximations that allowed to explore the search space more efficiently.
+
+\subsection{SANSA}
+
+SANSA is a platform whose purpose is\ldots
+
 \end{document}
