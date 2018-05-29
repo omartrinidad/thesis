@@ -41,11 +41,29 @@ distributed context.
 Knowledge Bases $KB$ are collections of facts; every fact is represented by a
 relation between a subject and object $r(s, o)$.
 
+In this work, we are focused on KBs modeled using the W3C standard Resource
+Description Framework~\cite{rdf} (RDF).
+
+In RDF, the facts are represented as triples $s, r, o$.
+
+% ¿Es relevante?
+% The facts in KBs are divided in A-Box and T-Box.
+
+\subsection{Similar works}
+
+The task of finding new logical rules given a KB has been addressed from
+multiple angles. For example, ILP based approaches, relational machine learning
+or hybrid approaches.
+
+One advantage, from AMIE over relational machine learning approaches, is that
+AMIE has better interpretability, which is crucial in the Data Science world.
+So, with AMIE, it is possible to mine logical rules where there is a
+correlation in the data.
+
 \subsection{AMIE}
 
 Inside AMIE, the Partial Completeness Assumption (PCA) was used to guess the
-so-called counterexamples for rules. 
-
+so-called counterexamples for rules.
 
 In the PCA we say that a subject-relation pair is complete if it does exists
 an object that for that s,r.
