@@ -1,5 +1,7 @@
 \documentclass{article}
 
+% https://tex.stackexchange.com/questions/106988/package-for-drawing-rdf-graphs
+
 \title{
 Distributed AMIE+\\
 \large Preliminary Notes\\
@@ -29,9 +31,10 @@ However,  these databases are designed under the idea of Open World Assumption
 that this fact is false, as happens under the Closed World Assumption (CWA).
 
 Finding these relations in huge datasets, and under the OWA setting is a
-challenging task. This problem was addressed by Galárraga et al. who proposed
-Association Rule Mining under Incomplete Evidence (AMIE) and later suggested an
-improved version of the same method that they simple named AMIE+.
+challenging task. This problem was addressed by Galárraga et
+al.~\cite{galarraga2013amie}  who proposed Association Rule Mining under
+Incomplete Evidence (AMIE) and later suggested an improved version of the same
+method that they simple named AMIE+~\cite{galarraga2015fast}.
 
 The purpose of the current project is to explore AMIE+ and implement it in a
 distributed context.
@@ -46,6 +49,12 @@ Description Framework~\cite{rdf} (RDF).
 
 In RDF, the facts are represented as triples $s, r, o$.
 
+Horn rules
+
+An \textit{atom} is a fact with different variables at the subject and object.
+A Horn rule is composed of a head and a body. The head is a single atom and the
+body is a set of atoms.
+
 % ¿Es relevante?
 % The facts in KBs are divided in A-Box and T-Box.
 
@@ -56,11 +65,13 @@ multiple angles. For example, ILP based approaches, relational machine learning
 or hybrid approaches.
 
 One advantage, from AMIE over relational machine learning approaches, is that
-AMIE has better interpretability, which is crucial in the Data Science world.
+AMIE has better interpretability, which is a crucial in the Data Science world.
 So, with AMIE, it is possible to mine logical rules where there is a
 correlation in the data.
 
 \subsection{AMIE}
+
+% The purpose of AMIE is to generate Horn rules.
 
 Inside AMIE, the Partial Completeness Assumption (PCA) was used to guess the
 so-called counterexamples for rules.
@@ -73,6 +84,24 @@ of values.
 
 %\subsubsection{Completeness}
 %Lets say that $KB*$ contains every fact of the world.
+
+\subsubsection{Rules and language bias}
+
+\textbf{ToDo}: What a rule is, draw some diagrams\ldots
+
+In order to limit the size of the search space, AMIE uses constraints that are called
+\textit{language bias}
+
+% ToDo
+% Tikz figure showing examples of rules.
+% Tikz figures for SANSA stack.
+
+In order to limit the size of the search space, AMIE uses some constraints on
+the structure of the desired rules.
+
+Connectivity: Two atoms in a rule are connected if they share a variable or
+entity. A rule is connected when every atom is connected transitively to the
+rest of atoms. 
 
 \subsection{AMIE plus}
 
