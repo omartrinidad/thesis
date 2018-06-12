@@ -11,6 +11,26 @@ of the Thesis Project\\
 
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% Tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{tikz}
+    \usetikzlibrary{shapes.geometric, backgrounds, calc}
+    \usetikzlibrary{arrows}
+% For every picture that defines or uses external nodes, you'll have to
+% apply the 'remember picture' style. To avoid some typing, we'll apply
+% the style to all pictures.
+\tikzstyle{every picture}+=[remember picture]
+
+% By default all math in TikZ nodes are set in inline mode. Change this to
+% displaystyle so that we don't get small fractions.
+\everymath{\displaystyle}
+
+% Tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{document}
 \maketitle
 
@@ -20,11 +40,7 @@ Knowledge bases (KB) have the purpose of representing and store knowledge in a
 machine-readable format. Some well-known KBs are DBpedia~\cite{dbpedia-swj},
 NELL, YAGO~\cite{suchanek2007yago}, or Freebase~\cite{bollacker2008freebase}. A
 usual task executed in these databases is mining logical rules, that is, find
-unknown relationships between entities. For example,
-
-\begin{equation*}
-livesIn(a, x) and marriedTo(a, b) => livesIn(b, x)
-\end{equation*}
+unknown relationships between entities.
 
 However,  these databases are designed under the idea of Open World Assumption
 (OWA), that means, if the database does not contain a fact, we are not assuming
@@ -39,24 +55,83 @@ method that they simple named AMIE+~\cite{galarraga2015fast}.
 The purpose of the current project is to explore AMIE+ and implement it in a
 distributed context.
 
-\subsection{Theory}
+\subsection{Theoretical framework}
 
 Knowledge Bases $KB$ are collections of facts; every fact is represented by a
-relation between a subject and object $r(s, o)$.
+relation between a subject and object $r(s, o)$. In this work, we are focused
+on KBs modeled using the W3C standard Resource Description Framework~\cite{rdf}
+(RDF). In RDF, the facts are represented as triples.
 
-In this work, we are focused on KBs modeled using the W3C standard Resource
-Description Framework~\cite{rdf} (RDF).
+%\begin{figure}
+%\resizebox{7.555cm}{!}{%
+%    \input{diagrams/rdf.tex}
+%}
+%\caption{Very simple example of RDF graph}
+%\label{fig:rdf}
+%\end{figure}
 
-In RDF, the facts are represented as triples $s, r, o$.
+An \textit{atom} is a fact with variables at the subject and/or object. A Horn
+rule is composed of a head and a body.
 
-Horn rules
+\begin{itemize}
+    \item The head is a single atom \tikz\node [fill=green!20,draw,circle] (n3) {};
+    \item The body is a set of atoms \tikz\node [fill=blue!20,draw,circle] (n1) {};
+\end{itemize}
 
-An \textit{atom} is a fact with different variables at the subject and object.
-A Horn rule is composed of a head and a body. The head is a single atom and the
-body is a set of atoms.
+% Below we mix an ordinary equation with TikZ nodes
+\begin{equation}
+        \tikz[baseline]{
+            \node[fill=blue!20,anchor=base] (b1)
+            { $B_1$ };
+        } \land
+        \tikz[baseline]{
+            \node[fill=blue!20,anchor=base] (b2)
+            { $B_2$ };
+        } \land \ldots \land
+        \tikz[baseline]{
+            \node[fill=blue!20,anchor=base] (b3)
+            { $B_n$ };
+        }
+        \implies
+        \tikz[baseline]{
+            \node[fill=green!20,anchor=base] (head)
+            { $r(x, y)$ };
+        }
+\end{equation}
+
+% Draw some edges between the global nodes
+\begin{tikzpicture}[overlay]
+        \path[->] (n1) edge [out=-100, in=-250] (b1);
+        \path[->] (n1) edge [out=-100, in=-250] (b2);
+        \path[->] (n1) edge [out=-100, in=-250] (b3);
+        \path[->] (n3) edge [out=0, in=-250] (head);
+\end{tikzpicture}
 
 % ¿Es relevante?
 % The facts in KBs are divided in A-Box and T-Box.
+
+\subsubsection{Horn rules and language bias}
+
+In order to limit the size of the search space, AMIE uses constraints that are called
+\textit{language bias}
+
+% ToDo
+% Tikz figure showing examples of rules.
+% Tikz figures for SANSA stack.
+
+There is an aim to limit the size of the search space, with AMIE, for example,
+we use constraints on the structure of the mined rules, this is called language
+bias. The idea is to have good designed language bias to avoid to deal with an
+intractable search space but at the same time to generate more expressive rules.
+
+
+\begin{itemize}
+    \item We aim for connectivity, two atoms in a rule are connected if they share a variable or
+entity. A rule is connected when every atom is connected transitively to the
+rest of atoms.
+    \item The rules have to be closed.
+    \item Also, reflexive rules are discarded.
+\end{itemize}
 
 \subsection{Similar works}
 
@@ -85,23 +160,6 @@ of values.
 %\subsubsection{Completeness}
 %Lets say that $KB*$ contains every fact of the world.
 
-\subsubsection{Rules and language bias}
-
-\textbf{ToDo}: What a rule is, draw some diagrams\ldots
-
-In order to limit the size of the search space, AMIE uses constraints that are called
-\textit{language bias}
-
-% ToDo
-% Tikz figure showing examples of rules.
-% Tikz figures for SANSA stack.
-
-In order to limit the size of the search space, AMIE uses some constraints on
-the structure of the desired rules.
-
-Connectivity: Two atoms in a rule are connected if they share a variable or
-entity. A rule is connected when every atom is connected transitively to the
-rest of atoms. 
 
 \subsection{AMIE plus}
 
