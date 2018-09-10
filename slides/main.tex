@@ -1,0 +1,167 @@
+\documentclass{beamer}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{tikz}
+    \usetikzlibrary{shapes.geometric, backgrounds, calc}
+
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+
+\title[Mining Logical Rules]{Mining Logical Rules}
+\author{Omar Gutiérrez}
+\institute{}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+\section{Introduction}
+
+\begin{frame}{Introduction}
+\begin{itemize}
+  \item A knowledge base (KB) is filled with facts.
+  		\begin{itemize}
+
+        \item Every fact is represented by a \textbf{relation} between a
+            \textit{subject} and \textit{object}.
+        \item For example: \textit{Homer} \textbf{isHusbandOf} \textit{Marge}.
+  		\end{itemize}
+  \item Some popular KBs are \textbf{DBpedia}, \textbf{YAGO}, \textbf{Wikidata}, \textbf{Freebase}, etc.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{How they are designed?}
+\begin{itemize}
+  \item The Resource Description Framework (RDF) is the most popular format for the semantic KBs.
+  \item Every fact in KBs is known as triple.
+\end{itemize}
+
+\vskip 0.2cm
+
+\begin{figure}
+\resizebox{7.555cm}{!}{%
+    \input{diagrams/rdf.tex}
+}
+\caption{Very simple example of RDF graph}
+\label{fig:rdf}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Open and Closed World Assumption}
+\begin{itemize}
+    \item \textbf{Open World Assumption} (OWA) is assumed in relational databases.
+    \item \textbf{Closed World Assumption} (CWA) is assumed in semantic knowledge bases.
+        \begin{itemize}
+            \item Semantic KBs do not contain negative evidence :(
+        \end{itemize}
+    %\item \textbf{PARTIAL CLOSED World Assumption}.
+\end{itemize}
+\end{frame}
+
+
+\section{Mining facts}
+\begin{frame}{Mining facts}
+\begin{itemize}
+   \item Let’s say that we know the next facts
+   \begin{itemize}
+   		\item \textless Homer\textgreater\  \textbf{isHusbandOf} \textless Marge\textgreater\
+        \item \textless Homer\textgreater\  \textbf{wasBornIn} \textless United States\textgreater\
+        \item \ldots
+        \item \textless Marge\textgreater\  \textbf{wasBornIn} \textless?\textgreater
+   \end{itemize}
+   \item Another example:
+   \begin{itemize}
+   		\item \textless Bart\textgreater\  \textbf{isSonOf} \textless Homer\textgreater
+        \item \textless Lisa\textgreater\  \textbf{isDaughterOf} \textless Homer\textgreater
+        \item \ldots
+        \item \textless Bart\textgreater\  \textbf{isBrotherOf} \textless?\textgreater
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Language bias}
+    \begin{itemize}
+        \item Language bias are constraints whose aim is \textit{limit the size of the search space}.
+    \end{itemize}
+\end{frame}
+
+%\begin{frame}{Basic idea of the Mining Process}
+%	\begin{itemize}
+%        %\item Association Rule Mining under Incomplete Evidence (AMIE) is one
+%        %    \textit{of several} algorithms used to mine logic rules in KB.
+%        \item The idea is similar to the association rule learning.
+%        % \item \textbf{Let’s take a look on it}.
+%        \item Use language bias (or constraints) to reduce the size of the search space.
+%            \begin{itemize}
+%                \item We ignore \textit{unconnected} rules:
+%                    \begin{itemize}
+%                        \item \textless Homer\textgreater\  \textbf{worksOn} \textless Nuclear Plant\textgreater
+%                        \item \textless Moe\textgreater\  \textbf{worksOn} \textless Moe's Pub\textgreater
+%                    \end{itemize}
+%                    \item We ignore \textit{reflexive} rules:
+%                    \begin{itemize}
+%                        \item \textless Maggie\textgreater\  \textbf{isEqualTo} \textless Maggie\textgreater
+%                    \end{itemize}
+%            \end{itemize}
+%	\end{itemize}
+%\end{frame}
+
+%\section{AMIE}
+%\begin{frame}{AMIE algorithm}
+%	\begin{itemize}
+%   		\item Association Rule Mining under Incomplete Evidence (AMIE) is one \textit{of several} algorithms used to mine logic rules in KB.
+%        \item It is a similar idea to the association rule learning.
+%        \item \textbf{Let’s take a look on it}.
+%        \item Use language bias (or constraints) to reduce the size of the search space.
+%        \begin{itemize}
+%        \item
+%        \end{itemize}
+%	\end{itemize}
+%\end{frame}
+
+\section{Conclusions}
+\begin{frame}{Conclusions}
+	\begin{itemize}
+   		\item Why this?
+        \begin{itemize}
+            \item KBs, such as, DBpedia or Wikidata are \textit{always growing}, we
+                need to be sure that the incoming new facts are reliable.
+            \item We can find data modeled as KBs in several areas:
+            \begin{itemize}
+                \item Medicine
+                \item Bioinformatics
+                \item Publishing
+            \end{itemize}
+            \item Because is interesting ;)
+        \end{itemize}
+	\end{itemize}
+\end{frame}
+
+\end{document}
