@@ -14,12 +14,16 @@ of the Thesis Project\\
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{xcolor}
+%\usepackage{venndiagram}
 
 % Tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage{tikz}
     \usetikzlibrary{shapes.geometric, backgrounds, calc}
     \usetikzlibrary{arrows}
+    \usetikzlibrary{positioning}
+    \usetikzlibrary{chains}
+
 % For every picture that defines or uses external nodes, you'll have to
 % apply the 'remember picture' style. To avoid some typing, we'll apply
 % the style to all pictures.
@@ -57,18 +61,12 @@ distributed context.
 
 \subsection{Theoretical framework}
 
+%~\cite{rdf}
 Knowledge Bases $KB$ are collections of facts; every fact is represented by a
 relation between a subject and object $r(s, o)$. In this work, we are focused
-on KBs modeled using the W3C standard Resource Description Framework~\cite{rdf}
+on KBs modeled using the W3C standard Resource Description Framework
 (RDF). In RDF, the facts are represented as triples.
 
-%\begin{figure}
-%\resizebox{7.555cm}{!}{%
-%    \input{diagrams/rdf.tex}
-%}
-%\caption{Very simple example of RDF graph}
-%\label{fig:rdf}
-%\end{figure}
 
 An \textit{atom} is a fact with variables at the subject and/or object. A Horn
 rule is composed of a head and a body.
@@ -82,7 +80,7 @@ rule is composed of a head and a body.
 \begin{equation}
         \tikz[baseline]{
             \node[fill=blue!20,anchor=base] (b1)
-            {$B_1$};
+            { $B_1$ };
         } \land
         \tikz[baseline]{
             \node[fill=blue!20,anchor=base] (b2)
@@ -113,7 +111,7 @@ rule is composed of a head and a body.
 \subsubsection{Horn rules and language bias}
 
 In order to limit the size of the search space, AMIE uses constraints that are called
-\textit{language bias}
+\textit{language bias}.
 
 % ToDo
 % Tikz figure showing examples of rules.
@@ -124,7 +122,6 @@ we use constraints on the structure of the mined rules, this is called language
 bias. The idea is to have good designed language bias to avoid to deal with an
 intractable search space but at the same time to generate more expressive rules.
 
-
 \begin{itemize}
     \item We aim for connectivity, two atoms in a rule are connected if they share a variable or
 entity. A rule is connected when every atom is connected transitively to the
@@ -132,6 +129,27 @@ rest of atoms.
     \item The rules have to be closed.
     \item Also, reflexive rules are discarded.
 \end{itemize}
+
+\subsubsection{Measures of significance}
+
+We want to use only rules above a given support threshold.
+
+\subsubsection{Incompleteness}
+
+As was stated before, the semantic KBs operate under the CWA, that is, we
+assume the facts in the database are known true facts, everything else, outside
+the database is asumed to be unknown.
+
+Going beyond, we say that the unknown facts are either true or false facts, we
+want to predict the new ones.
+
+\begin{figure}
+\resizebox{7.555cm}{!}{%
+    \input{diagrams/kb.tex}
+}
+\caption{Flowchart of AMIE algorithm}
+\label{fig:kb}
+\end{figure}
 
 \subsection{Similar works}
 
@@ -160,15 +178,22 @@ of values.
 %\subsubsection{Completeness}
 %Lets say that $KB*$ contains every fact of the world.
 
-
 \subsection{AMIE plus}
+
+\begin{figure}[htbp]
+\resizebox{!}{18cm}{%
+    \input{diagrams/amie_flowchart.tex}
+}
+\caption{Flowchart of AMIE algorithm}
+\label{fig:amie_flowchart}
+\end{figure}
 
 In AMIE+ it was aggregated pruning strategies and approximations that allowed
 to explore the search space more efficiently.
 
 \subsection{SANSA Stack}
 
-SANSA is a platform whose purpose is\ldots
+SANSA~\cite{lehmann-2017-sansa-iswc} is a platform whose purpose is\ldots
 
 \bibliographystyle{plain}
 \bibliography{notes}
