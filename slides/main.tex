@@ -23,6 +23,9 @@
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+
 
 \title[Mining Logical Rules]{Mining Logical Rules}
 \author{Omar Gutiérrez}
@@ -75,6 +78,7 @@
 \end{frame}
 
 \begin{frame}{Open and Closed World Assumption}
+
 \begin{itemize}
     \item \textbf{Open World Assumption} (OWA) is assumed in relational databases.
     \item \textbf{Closed World Assumption} (CWA) is assumed in semantic knowledge bases.
@@ -83,8 +87,17 @@
         \end{itemize}
     %\item \textbf{PARTIAL CLOSED World Assumption}.
 \end{itemize}
-\end{frame}
 
+% ToDo: Add color, symbols, bold
+\begin{tabular}{ l | c | c }
+    \toprule
+    & OWA & CWA \\
+    \midrule
+    Counter-examples & No & Yes \\
+    \bottomrule
+\end{tabular}
+
+\end{frame}
 
 \section{Mining facts}
 \begin{frame}{Mining facts}
@@ -146,7 +159,24 @@
 %	\end{itemize}
 %\end{frame}
 
+
+\section{AMIE}
+\begin{frame}{AMIE vs ILP}
+    
+    % ToDo: Add color, symbols, bold
+    \begin{tabular}{ l | c | c }
+        \toprule
+        & AMIE & ILP \\
+        \midrule
+        Counter-examples & Works in the absense of them & Works with them \\
+        Scalability      & Yes  & No\\
+        \bottomrule
+    \end{tabular}
+
+\end{frame}
+
 \section{Conclusions}
+
 \begin{frame}{Conclusions}
 	\begin{itemize}
    		\item Why this?

@@ -24,7 +24,7 @@
     ]
 
 {\small\ttfamily\selectfont
-% ------------------------------------------------- 
+% ------------------------------------------------------------------------------ 
 % A few box styles 
 % <on chain> *and* <on grid> reduce the need for manual relative
 % positioning of nodes
@@ -37,10 +37,10 @@
   proc_small/.style={base, rectangle, text width=8em},
   term/.style={proc, rounded corners, text width=8cm},
   % coord node style is used for placing corners of connecting lines
-  coord/.style={coordinate, on chain, on grid, node distance=6mm and 15mm},
+  coord/.style={coordinate, on chain, on grid, node distance=55mm and 65mm},
   % nmark node style is used for coordinate debugging marks
   nmark/.style={draw, cyan, circle, font={\sffamily\bfseries}},
-  % -------------------------------------------------
+  % ----------------------------------------------------------------------------
   % Connector line styles for different parts of the diagram
   norm/.style={->, draw, blue},
   free/.style={->, draw, green},
@@ -52,15 +52,14 @@
 % Use join to connect a node to the previous one a
 
 \node [term] (p0) {
-    KB $K$, knowledge base,\\
-    $minHC$, minimum head coverage,\\
-    $maxLen$, size of rules
+    KB $K$, knowledge base;\\
+    $minHC$, minimum head coverage;\\
+    $maxLen$, size of rules;\\
+    $minC$, threshold in the confidence\\
 };
 \node [proc, join] (q) {
+    out = $\langle\rangle$ \\
     q = [$r_1(x, y)$, $r_2(x, y)$,\ldots, $r_m(x,y)$]
-};
-\node [proc, join] (p2) {
-    out=$\langle\rangle$
 };
 \node [diam, join] (is_empty) {
     $\lnot q.isEmpty()$
@@ -92,9 +91,8 @@
 \node [proc_small, join] (p11) {
     q.enqueue($r_c$)
 };
-\node [proc_small, below of = p11, node distance = 2.6cm] (return) {return out};
+\node [proc_small, below of = p11, node distance=2.6cm] (return) {return out};
 \node [proc_small, join] (end) {end};
-
 
 \draw[->] (check.east) -- ++(0.66,0) -- ++(0,-0.05) -- node [near start] {no} ++(0,-3.0) -- ++(-7,0) -- ++(0, 7) -- (p9.north);
 \draw[->] (is_empty.east)  -- ++(0,0.0) -- ++(2.35,0) -- node [near start] {no} ++(0,-22.3) -- ++(-4,0) -- (return.north);
@@ -109,6 +107,12 @@
 \node [notes, right of=accepted_for_output] {Decide whether to output a rule,\\check for closeness and connectedness,\\among other things, see algorithm 2};
 \node [notes, right of=check] {Check if the rules are pruned (by the head coverage) and duplicated};
 \node [notes, right of=check_max_len] {Check if the rule exceeds the maximum number of atoms};
+
+% marks
+\node[coord, right=of p0] (c0) {}; \cmark{0} 
+\node[coord, right=of q] (c1) {}; \cmark{1} 
+\node[coord, right=of is_empty] (c2) {}; \cmark{2} 
+\node[coord, right=of accepted_for_output] (c3) {}; \cmark{3} 
 
 }
 \end{tikzpicture}

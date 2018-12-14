@@ -1,6 +1,7 @@
 \documentclass{article}
 
 % https://tex.stackexchange.com/questions/106988/package-for-drawing-rdf-graphs
+% https://tex.stackexchange.com/questions/9442/how-to-draw-lines-around-multiple-table-cells
 
 \title{
 Distributed AMIE+\\
@@ -14,9 +15,15 @@ of the Thesis Project\\
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{xcolor}
+\usepackage{booktabs}
 %\usepackage{venndiagram}
 
-% Tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\triple}[3]{{\itshape\textless#1\textgreater} {\bfseries#2} {\itshape\textless#3\textgreater}}
+\newcommand{\instantiation}[2]{{\itshape#1}{$\implies$}{\itshape#2}}
+\newcommand{\ins}[2]{{#1}{\implies}{#2}}
+\newcommand{\body}{\vec{B}}
+
+% Begin tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage{tikz}
     \usetikzlibrary{shapes.geometric, backgrounds, calc}
@@ -33,7 +40,12 @@ of the Thesis Project\\
 % displaystyle so that we don't get small fractions.
 \everymath{\displaystyle}
 
-% Tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Introduce a new counter for counting the nodes needed for circling
+\newcounter{nodecount}
+% Command for making a new node and naming it according to the nodecount counter
+\newcommand\tabnode[1]{\addtocounter{nodecount}{1} \tikz \node (\arabic{nodecount}) {#1};}
+
+% End tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 \maketitle
@@ -41,10 +53,21 @@ of the Thesis Project\\
 \section{Introduction}
 
 Knowledge bases (KB) have the purpose of representing and store knowledge in a
-machine-readable format. Some well-known KBs are DBpedia~\cite{dbpedia-swj},
+machine-readable format. These databases are populated with entities and facts.
+
+Some well-known KBs are DBpedia~\cite{dbpedia-swj},
 NELL, YAGO~\cite{suchanek2007yago}, or Freebase~\cite{bollacker2008freebase}. A
-usual task executed in these databases is mining logical rules, that is, find
+usual task executed in these databases is mining logical rules (Horn rules), that is, find
 unknown relationships between entities.
+
+Some reasons why we want to obtain logical rules are
+
+\begin{itemize}
+    \item Obtaining new facts.
+    \item Identify potential new wrong facts.
+    \item Use the rules for reasoning.
+    \item Find especial relationships
+\end{itemize}
 
 However,  these databases are designed under the idea of Open World Assumption
 (OWA), that means, if the database does not contain a fact, we are not assuming
@@ -66,7 +89,6 @@ Knowledge Bases $KB$ are collections of facts; every fact is represented by a
 relation between a subject and object $r(s, o)$. In this work, we are focused
 on KBs modeled using the W3C standard Resource Description Framework
 (RDF). In RDF, the facts are represented as triples.
-
 
 An \textit{atom} is a fact with variables at the subject and/or object. A Horn
 rule is composed of a head and a body.
@@ -108,14 +130,225 @@ rule is composed of a head and a body.
 % ¿Es relevante?
 % The facts in KBs are divided in A-Box and T-Box.
 
-\subsubsection{Horn rules and language bias}
+\subsubsection{Incompleteness}
+
+As was stated before, the semantic KBs operate under the CWA, that is, we
+assume the facts in the database are known true facts, everything else, outside
+the database is asumed to be unknown.
+
+Going beyond, we say that the unknown facts are either true or false facts, we
+want to predict the new ones.
+
+\begin{figure}
+\resizebox{7.555cm}{!}{%
+    \input{diagrams/kb.tex}
+}
+\caption{Incompleteness}
+\label{fig:kb}
+\end{figure}
+
+\subsubsection{Rule Mining}
+
+\subsubsection{Significance: Support and Head Coverage}
+
+We look for meaningful rules, we have two measures of \textit{rule significance}:
+support and head coverage. The \textbf{support} is the number of instantiations or
+correct predictions of some rule, it is defined as
+
+\begin{equation}
+    \label{eq:support}
+    supp(\vec{B} \implies r(x, y)) = \#(x, y): \exists z_1,\ldots,z_m : \vec{B} \land r(x, y) \,,
+\end{equation}
+
+\noindent where $z_1, \ldots, z_m$ are the variables of the rule that are not
+$x$ and $y$. Let's consider as example the rule
+
+\begin{equation*}
+    R = \ins{livesIn(x, y)}{wasBornIn(x,y)}
+\end{equation*}
+
+\noindent and the tiny knowledge base presented in~\ref{table:significance}; we can see that
+the rule is instantiated only once, \instantiation{livesIn(Bart, Springfield)}{wasBornIn(Bart, Springfield)}.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{ c c }
+    \toprule
+        livesIn & wasBornIn \\
+    \midrule
+        \tabnode{(Bart, Springfield) } & \tabnode{(Bart, Springfield)} \\
+        (Willy, Springfield)           & (Apu, India)                  \\
+        (Homer, Springfield)           & \tabnode{(Willy, Scotland)}   \\
+    \bottomrule
+    \end{tabular}
+    \caption{Tiny knowlege base}
+    \label{table:significance}
+\end{table}
+
+A better way to measure the significance, is using the \textbf{head coverage}, defined as
+
+\begin{equation}
+    \label{eq:hc}
+    hc(\vec{B} \implies r(x, y)) = \dfrac{supp(\vec{B} \implies r(x, y))}{size(r)} \,,
+\end{equation}
+
+\noindent where $size(r)$ is the number of times that the head rule it does
+appear in the knowledge base, in the example above, \textit{wasBornIn} is
+repeated two times, hence, $hc(R) = 1/3$.
+
+\subsubsection{Confidence: Standard confidence and PCA confidence}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{ c c }
+    \toprule
+        livesIn & wasBornIn \\
+    \midrule
+        \tabnode{(Bart, Springfield)}  & \tabnode{(Bart, Springfield)} \\
+        \tabnode{(Willy, Springfield)} & (Apu, India)                  \\
+                 (Homer, Springfield)  & (Willy, Scotland)             \\
+        \tabnode{(Bart, Shellbyville)} &                               \\
+    \bottomrule
+    \end{tabular}
+
+    \caption{
+        Framed in red, is the entire set of conclusions that comply
+        with the specified body $\body$; framed in blue, is the fact
+        considered to be true; in green, all the remaining facts, negative in the CWA and
+        unknown in the OWA. In brown, the facts negative facts in the PCA.
+    }
+
+    \label{table:confidence}
+\end{table}
+
+\begin{tikzpicture}[overlay]
+    % some options common to all the nodes and paths
+    \tikzstyle{every picture}+=[remember picture,baseline]
+    \tikzstyle{every node}+=[inner sep=0pt,anchor=base,
+    minimum width=1.8cm,align=center,text depth=.25ex,outer sep=1.5pt]
+    \tikzstyle{every path}+=[thick, rounded corners]
+
+    % Define the circle paths
+    \draw [blue] (1.north west) -- (2.north east) --
+                 (2.south east) -- (1.south west) --
+                 cycle;
+    \draw [red] (2.north west) -- (2.north east) --
+                (3.south east) -- (3.south west) --
+                cycle;
+    \draw [blue] (4.north west) -- (5.north east) --
+                 (5.south east) -- (4.south west) --
+                 cycle;
+    \draw [red] (4.north west) -- (4.north east) --
+                (7.south east) -- (7.south west) --
+                cycle;
+    \draw [green] (6.north west) -- (6.north east) --
+                  (7.south east) -- (7.south west) --
+                  cycle;
+    %labels
+    \node [right=2.333cm, minimum width=1pt] at (2) (A) {$supp$};
+    \draw [<-, out=5, in=180] (2) to (A);
+    \node [right=2.333cm, minimum width=1pt] at (3) (A) {$size(r)$};
+    \draw [<-, out=5, in=180] (3) to (A);
+    \node [right=2.333cm, minimum width=1pt] at (5) (C) {$size(r)$};
+    \draw [<-, out=5, in=180] (5) to (C);
+\end{tikzpicture}
+
+The confidence measures are used to determine the quality of a rule. The
+\textbf{standard confidence} defined as 
+
+\begin{equation}
+    \label{eq:stand_conf}
+    conf(\vec{B} \implies r(x, y)) = 
+             \dfrac{supp(\vec{B} \implies r(x, y))}
+                   {\#(x, y): \exists z_1,\ldots,z_m : \vec{B}} %\,,
+\end{equation}
+
+\noindent is usually used in association rule mining in the context of market basket
+analysis and suppose a CWA universe, this setting is different to the one we are dealing with, but is a good reference. In AMIE, was proposed the \textbf{PCA
+confidence}, to deal with the rule mining problem in an OWA universe. 
+
+\begin{equation}
+    \label{eq:stand_conf}
+    conf_{pca}(\vec{B} \implies r(x, y)) = 
+                    \dfrac{supp(\vec{B} \implies r(x, y))}
+                          {\#(x, y): \exists z_1,\ldots,z_m, y' :\vec{B} \land r(x, y')} \,,
+\end{equation}
+
+%
+% Improve this part!!!
+%
+In the PCA confidence, we assume that knowing one $y$ for a given $x$ and $r$,
+we know all $y$ for that $x$ and $r$.
+
+In the shown example, we look at the body of $R$; the relation
+\textit{livesIn}, it does appear four times, and the rule is instantiated
+once, the corresponding fact in the instantiated rule is considered as true. If we were considering the OWA, the three remaining facts
+would be marked as unknown, the same facts would be marked as false in the CWA.
+
+In the PCA assumption, the main purpose is to identify counter-examples from
+the set of unknown facts, in the example, we see that the fact
+\textit{livesIn(Bart, Shelbyville)} is contradicting the fact
+\textit{livesIn(Bart, Springfield)}, which is known to be true, hence, we
+consider this fact as false.
+
+\subsubsection{Function, functionality, and inverse functionality}
+
+The relations with \textit{at most one object} for every subject are called
+\textit{functions}, for example,
+
+\begin{itemize}
+    \item \triple{Bart}{hasBirtdate}{1980} or
+    \item \triple{Lisa}{hasBiologicalMother}{Marge}.
+\end{itemize}
+
+There are other type of relations, which properly, are not functions, but are
+alike functions, for example,
+
+\begin{itemize}
+    \item \triple{Bart}{hasNationality}{USA} or
+    \item \triple{Jurassic Park}{wasDirectedBy}{Steven Spielberg}.
+\end{itemize}
+
+Most of the movies have only one director and most of the people have one
+nationality, so, the behavior of these relations is \textit{almost like a
+function}. But, there are exceptions to the rule, e. g.,
+
+\begin{itemize}
+    \item \triple{Jim Carrey}{hasNationality}{Canada} and
+    \item \triple{Jim Carrey}{hasNationality}{USA}. Or
+    \item \triple{Poltergeist}{wasDirectedBy}{Tobe Hooper} and
+    \item \triple{Poltergeist}{wasDirectedBy}{Steven Spielberg}.
+\end{itemize}
+
+So, these relations are not functions. Nevertheless, we say that have a high
+degree of \textit{functionality}, which is expressed with the next equation:
+
+\begin{equation} %\label{eq:functionality}
+    fun(r) = \dfrac{\#x : \exists y : r(x, y)}{\#(x, y) : r(x, y)} \,.
+\end{equation}
+
+\noindent Another related concept is \textit{inverse functionality} $ifun(r) =
+fun(r^{-1})$, in the inverse functions, every object have at most one subject,
+e. g.,
+
+\begin{itemize}
+    \item \triple{Marge}{hasDaughter}{Lisa}, here, \textbf{hasDaughter}$^{-1}$ = \textbf{hasMother}.
+\end{itemize}
+
+In AMIE, it is assumed that functionality is usually higher than the inverse
+functionality.
+
+%\begin{equation} \label{eq:functionality}
+%    fun(r)
+%\end{equation}
+
+\subsubsection{Language bias}
 
 In order to limit the size of the search space, AMIE uses constraints that are called
 \textit{language bias}.
 
 % ToDo
 % Tikz figure showing examples of rules.
-% Tikz figures for SANSA stack.
 
 There is an aim to limit the size of the search space, with AMIE, for example,
 we use constraints on the structure of the mined rules, this is called language
@@ -130,27 +363,6 @@ rest of atoms.
     \item Also, reflexive rules are discarded.
 \end{itemize}
 
-\subsubsection{Measures of significance}
-
-We want to use only rules above a given support threshold.
-
-\subsubsection{Incompleteness}
-
-As was stated before, the semantic KBs operate under the CWA, that is, we
-assume the facts in the database are known true facts, everything else, outside
-the database is asumed to be unknown.
-
-Going beyond, we say that the unknown facts are either true or false facts, we
-want to predict the new ones.
-
-\begin{figure}
-\resizebox{7.555cm}{!}{%
-    \input{diagrams/kb.tex}
-}
-\caption{Flowchart of AMIE algorithm}
-\label{fig:kb}
-\end{figure}
-
 \subsection{Similar works}
 
 The task of finding new logical rules given a KB has been addressed from
@@ -162,23 +374,21 @@ AMIE has better interpretability, which is a crucial in the Data Science world.
 So, with AMIE, it is possible to mine logical rules where there is a
 correlation in the data.
 
-\subsection{AMIE}
+\subsection{AMIE+ algorithm}
 
 % The purpose of AMIE is to generate Horn rules.
-
-Inside AMIE, the Partial Completeness Assumption (PCA) was used to guess the
-so-called counterexamples for rules.
-
-In the PCA we say that a subject-relation pair is complete if it does exists
-an object that for that s,r.
-
-Assume that if the KB knows relations for some subject then knows all the set
-of values.
-
 %\subsubsection{Completeness}
 %Lets say that $KB*$ contains every fact of the world.
 
-\subsection{AMIE plus}
+As mentioned before, AMIE+ uses the Partial Completeness Assumption (PCA) to
+guess the counter-examples, it also uses pruning strategies and approximations
+that allow exploring the search space more efficiently. 
+
+As seen in the Figure,  AMIE+ receives four parameters, the knowledge base, the
+minimum head coverage, the maximum size of the rules, and the threshold in the
+confidence (0). We initialize a queue q, with all the head atoms $r(x,y)$ and a
+list we will iterate over it (2). If the rule is accepted for
+output (3) we append it to out, 
 
 \begin{figure}[htbp]
 \resizebox{!}{18cm}{%
@@ -188,10 +398,20 @@ of values.
 \label{fig:amie_flowchart}
 \end{figure}
 
-In AMIE+ it was aggregated pruning strategies and approximations that allowed
-to explore the search space more efficiently.
+\subsubsection{Refinement or expansion}
+
+\begin{figure}[htbp]
+\resizebox{!}{18cm}{%
+    \input{diagrams/refinement.tex}
+}
+\caption{Flowchart of Refinement}
+\label{fig:refinement}
+\end{figure}
+
+% \subsubsection{Pruning strategies}
 
 \subsection{SANSA Stack}
+% Tikz figures for SANSA stack.
 
 SANSA~\cite{lehmann-2017-sansa-iswc} is a platform whose purpose is\ldots
 
