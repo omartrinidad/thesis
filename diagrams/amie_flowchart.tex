@@ -38,6 +38,7 @@
   term/.style={proc, rounded corners, text width=8cm},
   % coord node style is used for placing corners of connecting lines
   coord/.style={coordinate, on chain, on grid, node distance=55mm and 65mm},
+  coord2/.style={coordinate, on chain, on grid, node distance=35mm and 55mm},
   % nmark node style is used for coordinate debugging marks
   nmark/.style={draw, cyan, circle, font={\sffamily\bfseries}},
   % ----------------------------------------------------------------------------
@@ -52,10 +53,10 @@
 % Use join to connect a node to the previous one a
 
 \node [term] (p0) {
-    KB $K$, knowledge base;\\
+    KB $\mathcal{K}$, knowledge base;\\
     $minHC$, minimum head coverage;\\
     $maxLen$, size of rules;\\
-    $minC$, threshold in the confidence\\
+    $minConf$, threshold in the confidence\\
 };
 \node [proc, join] (q) {
     out = $\langle\rangle$ \\
@@ -94,25 +95,35 @@
 \node [proc_small, below of = p11, node distance=2.6cm] (return) {return out};
 \node [proc_small, join] (end) {end};
 
-\draw[->] (check.east) -- ++(0.66,0) -- ++(0,-0.05) -- node [near start] {no} ++(0,-3.0) -- ++(-7,0) -- ++(0, 7) -- (p9.north);
-\draw[->] (is_empty.east)  -- ++(0,0.0) -- ++(2.35,0) -- node [near start] {no} ++(0,-22.3) -- ++(-4,0) -- (return.north);
-\draw[->] (accepted_for_output.east)  -- ++(0,0.0) -- ++(1.35,0) -- node [near start] {no} ++(0,-3.3) -- (check_max_len.north);
-\draw[->] (check_max_len.east)  -- ++(0,0.0) -- ++(1.35,0) -- node [near start] {no} ++(0, -12.5) -- ++(-12,0) -- ++(0, 21) -- (is_empty.north);
-
-% notes
-\node [notes, right of=q] {q is a queue of rules containing\\all head atoms (size 1)};
-\node [notes, right of=is_empty] {Iterate until the queue is empty};
-\node [notes, right of=refinement] {The refinement is the expansion of the rule,\\to produce a set of new rules};
-\node [notes, right of=dequeue] {Dequeue the rules};
-\node [notes, right of=accepted_for_output] {Decide whether to output a rule,\\check for closeness and connectedness,\\among other things, see algorithm 2};
-\node [notes, right of=check] {Check if the rules are pruned (by the head coverage) and duplicated};
-\node [notes, right of=check_max_len] {Check if the rule exceeds the maximum number of atoms};
 
 % marks
-\node[coord, right=of p0] (c0) {}; \cmark{0} 
-\node[coord, right=of q] (c1) {}; \cmark{1} 
-\node[coord, right=of is_empty] (c2) {}; \cmark{2} 
-\node[coord, right=of accepted_for_output] (c3) {}; \cmark{3} 
+\node[coord, right=of is_empty] (c0) {}; \cmark{0} 
+\node[coord2, right=of accepted_for_output] (c1) {}; \cmark{1} 
+\node[coord2, right=of check_max_len] (c2) {}; \cmark{2} 
+\node (c3) at ($(p11)!0.5!(return)$)  {}; \cmark{3} 
+\node[coord, left=of is_empty.north] (c5) {}; \cmark{5} 
+
+% labels
+\path (is_empty.east) to node [midway, yshift=1em] {no} (c0); 
+\draw [*->] (is_empty.east) -- (c0) |- (return.east);
+
+\path (accepted_for_output.east) to node [midway, yshift=1em] {no} (c1); 
+\draw [*->] (accepted_for_output.east) -- (c1) |- (check_max_len.north);
+
+\path (check_max_len.east) to node [midway, yshift=1em] {no} (c2); 
+\draw [*->] (check_max_len.east) -- (c2) |- (c3.west) -| (c5) -- (is_empty.north);
+
+\draw[->] (check.east) -- ++(0.66,0) -- ++(0,-0.05) -- node [near start] {no} ++(0,-3.0) -- ++(-7,0) -- ++(0, 7) -- (p9.north);
+
+% notes
+%\node [notes, right of=q] {q is a queue of rules containing\\all head atoms (size 1)};
+%\node [notes, right of=is_empty] {Iterate until the queue is empty};
+%\node [notes, right of=refinement] {The refinement is the expansion of the rule,\\to produce a set of new rules};
+%\node [notes, right of=dequeue] {Dequeue the rules};
+%\node [notes, right of=accepted_for_output] {Decide whether to output a rule,\\check for closeness and connectedness,\\among other things, see algorithm 2};
+%\node [notes, right of=check] {Check if the rules are pruned (by the head coverage) and duplicated};
+%\node [notes, right of=check_max_len] {Check if the rule exceeds the maximum number of atoms};
+
 
 }
 \end{tikzpicture}

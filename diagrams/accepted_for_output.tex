@@ -19,7 +19,7 @@
 \begin{tikzpicture}[%
     >=triangle 60,              % Nice arrows; your taste may be different
     start chain=going below,    % General flow is top-to-bottom
-    node distance=4mm and 40mm, % Global setup of box spacing
+    node distance=7mm and 55mm, % Global setup of box spacing
     every join/.style={norm},   % Default linetype for connecting boxes
     ]
 
@@ -39,7 +39,7 @@
   proc_small/.style={base, rectangle, text width=8em},
   term/.style={proc, rounded corners, text width=8cm},
   % coord node style is used for placing corners of connecting lines
-  coord/.style={coordinate, on chain, on grid, node distance=55mm and 65mm},
+  coord/.style={coordinate, on chain, on grid, node distance=55mm and 75mm},
   % nmark node style is used for coordinate debugging marks
   nmark/.style={draw, cyan, circle, font={\sffamily\bfseries}},
   % ----------------------------------------------------------------------------
@@ -59,19 +59,19 @@
     $out$, ;\\
     $minC$, threshold in the confidence\\
 };
-\node [diam, join] (is_closed) {
+\node [diam, join, fill=blue] (is_closed) {
     $\lnot isClosed(r)$ or $conf_{pca}(r) < minC$
 };
-\node [proc, join] () {
+\node [proc, join, fill=red] (parents) {
     $parents$ = $parentsOfRule(r, out)$
 };
-\node [diam_small, join] (is_empty) {
+\node [diam, join, fill=red] (is_empty) {
     $\lnot$ parents.isEmpty()
 };
-\node [proc_small, join] () {
+\node [proc_small, join, fill=red] (parents_dequeue) {
     $r_p$ = parents.dequeue()
 };
-\node [diam_small, join] (check_confidence) {
+\node [diam_small, join, fill=red] (check_confidence) {
     $conf_{pca}(r) \leq conf_{pca}(r_{p})$
 };
 
@@ -85,23 +85,23 @@
 \node[coord, left=of check_confidence] (c2) {}; \cmark{2} 
 \node[coord, right=of check_confidence] (c3) {}; \cmark{3} 
 
-\path (is_closed.west) to node [near start, yshift=1em] {yes} (c0); 
+% labels
+\path (is_closed.south) to node [midway, xshift=1em] {no} (parents); 
+\path (is_closed.west) to node [midway, yshift=1em] {yes} (c0); 
 \draw [*->] (is_closed.west) -- (c0) -- (c2) |- (false);
 
-\path (is_empty.east) to node [near start, yshift=1em] {no} (c1); 
+\path (is_empty.south) to node [midway, xshift=2.4em] {not empty} (parents_dequeue); 
+\path (is_empty.east) to node [midway, yshift=1em] {empty} (c1); 
 \draw [o->] (is_empty.east) -- (c1) -- (c3) |- (true);
 
-\path (check_confidence.west) to node [near start, yshift=1em] {yes} (c2); 
+\path (check_confidence.west) to node [midway, yshift=1em] {yes} (c2); 
 \draw [*->] (check_confidence.west) -- (c2);
 
-\path (check_confidence.east) to node [near start, yshift=1em] {no} (c3); 
+\path (check_confidence.east) to node [midway, yshift=1em] {no} (c3); 
 \draw [o->] (check_confidence.east) -- (c3);
 
 \draw[->] (false.east)  -- (end.west);
 \draw[->] (true.west)  -- (end.east);
-
-% notes
-%\node [notes, right of=q] {q is a queue of rules containing\\all head atoms (size 1)};
 
 }
 \end{tikzpicture}

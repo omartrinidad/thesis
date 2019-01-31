@@ -3,10 +3,18 @@
 % https://tex.stackexchange.com/questions/106988/package-for-drawing-rdf-graphs
 % https://tex.stackexchange.com/questions/9442/how-to-draw-lines-around-multiple-table-cells
 
+% ALEPH
+% http://www.cs.ox.ac.uk/activities/machlearn/Aleph/aleph_toc.html
+
+% WARMeR
+% https://arxiv.org/abs/cs/0206023
+
 \title{
 Distributed AMIE+\\
-\large Preliminary Notes\\
-of the Thesis Project\\
+\large
+Preliminary Notes\\
+of the\\
+Thesis Project\\
 }
 \author{Omar Trinidad Guti\'errez M\'endez}
 
@@ -14,8 +22,11 @@ of the Thesis Project\\
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{graphicx}
-\usepackage{xcolor}
+\usepackage[x11names]{xcolor}
 \usepackage{booktabs}
+\usepackage{float}
+\usepackage{afterpage}
+\usepackage{listings}
 %\usepackage{venndiagram}
 
 \newcommand{\triple}[3]{{\itshape\textless#1\textgreater} {\bfseries#2} {\itshape\textless#3\textgreater}}
@@ -30,6 +41,11 @@ of the Thesis Project\\
     \usetikzlibrary{arrows}
     \usetikzlibrary{positioning}
     \usetikzlibrary{chains}
+
+% Set up a few colours
+\colorlet{green}{DarkOliveGreen3!50}
+\colorlet{red}{IndianRed3!50}
+\colorlet{blue}{DeepSkyBlue3!50}
 
 % For every picture that defines or uses external nodes, you'll have to
 % apply the 'remember picture' style. To avoid some typing, we'll apply
@@ -140,6 +156,7 @@ Going beyond, we say that the unknown facts are either true or false facts, we
 want to predict the new ones.
 
 \begin{figure}
+\centering
 \resizebox{7.555cm}{!}{%
     \input{diagrams/kb.tex}
 }
@@ -374,7 +391,7 @@ AMIE has better interpretability, which is a crucial in the Data Science world.
 So, with AMIE, it is possible to mine logical rules where there is a
 correlation in the data.
 
-\subsection{AMIE+ algorithm}
+\section{AMIE+ algorithm}
 
 % The purpose of AMIE is to generate Horn rules.
 %\subsubsection{Completeness}
@@ -384,36 +401,119 @@ As mentioned before, AMIE+ uses the Partial Completeness Assumption (PCA) to
 guess the counter-examples, it also uses pruning strategies and approximations
 that allow exploring the search space more efficiently. 
 
-As seen in the Figure,  AMIE+ receives four parameters, the knowledge base, the
-minimum head coverage, the maximum size of the rules, and the threshold in the
-confidence (0). We initialize a queue q, with all the head atoms $r(x,y)$ and a
-list we will iterate over it (2). If the rule is accepted for
-output (3) we append it to out, 
+As seen in the Figure~\ref{fig:amie_flowchart}, AMIE+ receives four parameters,
+the knowledge base KB $\mathcal{K}$, the minimum head coverage $minHC$, the
+maximum size of the rules $maxLen$, and the threshold in the confidence
+$minConf$. We initialize a queue $q$ with all the head atoms $r(x,y)$ and a
+list $out$ to save the result (blue).
 
-\begin{figure}[htbp]
-\resizebox{!}{18cm}{%
+We proceed to iterate and dequeue $q$, firstly we evaluate if the rule is accepted for
+output (see~\ref{ssec:filter_output}),
+
+% consider this!
+% https://blogs.gnome.org/muelli/2011/04/perfectly-scale-an-image-to-the-rest-of-a-page-with-latex/
+\afterpage{%
+\begin{figure}[p]
+\centering
+    \resizebox{!}{0.90\textheight}{%
     \input{diagrams/amie_flowchart.tex}
 }
 \caption{Flowchart of AMIE algorithm}
 \label{fig:amie_flowchart}
 \end{figure}
-
-\subsubsection{Refinement or expansion}
-
-\begin{figure}[htbp]
-\resizebox{!}{18cm}{%
-    \input{diagrams/refinement.tex}
+\clearpage
 }
-\caption{Flowchart of Refinement}
-\label{fig:refinement}
+
+\subsection{Refinement, rule expansion, mining operators}
+
+% traverse = crisscross
+
+The combination of conjunctions of atoms form a huge search space, which is
+impossible to explore. In AMIE, a set of \textbf{mining operators} is used to
+extend the rules iteratively and traverse the search space. 
+
+\subsubsection{Mining operators}
+
+The mining operators add a new atom $r(x, y)$ to some rule $B_1 \land \ldots
+\land B_n$. To do that, \textbf{count projection queries} are implemented. Not
+every relation $r$ is tested, are select only those above the head-coverage threshold.
+
+% Querying with Scala and Spark
+
+\begin{lstlisting}[
+           language=SQL,
+           showspaces=false,
+           basicstyle=\ttfamily,
+           numbers=left,
+           numberstyle=\tiny,
+           commentstyle=\color{gray},
+           mathescape=true
+        ]
+SELECT $r$, COUNT($H$) 
+WHERE $H \land B_1 \land \ldots \land B_n \land r(X, Y)$
+SUCH THAT COUNT($H$) $\geq minHC \times size(H)$
+\end{lstlisting}
+
+\begin{itemize}
+    \item $X$ and $Y$ are variables
+    \item $H$ is the head
+\end{itemize}
+ 
+\noindent \textbf{Dangling atom operator} ($\mathcal{O}_\mathcal{C}$): We add a new atom with a
+fresh variable $w$ and a shared variable with the rule, that is, 
+
+\begin{equation}
+    r(X, Y) \in \{ r(x, w), r(y, w), r(w, x), r(w, y) \}\,.
+\end{equation}
+
+\noindent \textbf{Closing atom operator} ($\mathcal{O}_\mathcal{D}$): We aim to close the variables
+that are open.
+
+\noindent \textbf{Instantiated atom operator} ($\mathcal{O}_\mathcal{I}$):
+
+\begin{equation}
+    r(X, Y) \in \{ r(x, w), r(y, w), r(w, x), r(w, y) \}\,.
+\end{equation}
+
+\subsection{In-memory database}
+\label{ssec:in_memory_database}
+
+The efficient implementation of count projection queries was done implementing
+an in-memory database...
+
+Having the three columns O, R, and S
+
+\subsection{Filter the output}
+\label{ssec:filter_output}
+
+After dequeuing a rule $r$ from $q$ we filter those ones\ldots
+
+\begin{itemize}
+    \item that are not closed and not connected and whose confidence value is 
+        below that the $minConf$ threshold (blue block in Fig~\ref{fig:accepted_for_output}),
+    %\item that has lower confidence than the ones stored in $out$
+    \item whose refinements $B_1 \land \ldots \land B_n \land B_{n+1} \implies H$ 
+        have equal or lower confidence than their parent 
+        $B_1 \land \ldots \land B_n \implies H$ (red blocks)
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\resizebox{!}{0.50\textheight}{%
+    \input{diagrams/accepted_for_output.tex}
+}
+\caption{Diagram of the rule filtering.}
+\label{fig:accepted_for_output}
 \end{figure}
 
-% \subsubsection{Pruning strategies}
+\subsection{Pruning strategies}
 
-\subsection{SANSA Stack}
+\section{SANSA Stack}
 % Tikz figures for SANSA stack.
 
 SANSA~\cite{lehmann-2017-sansa-iswc} is a platform whose purpose is\ldots
+
+A similar work to SANSA is S2RDF~\cite{schatzle2016s2rdf}.
 
 \bibliographystyle{plain}
 \bibliography{notes}
