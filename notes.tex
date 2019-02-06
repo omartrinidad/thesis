@@ -34,6 +34,11 @@ Thesis Project
 \newcommand{\instantiation}[2]{{\itshape#1}{$\implies$}{\itshape#2}}
 \newcommand{\ins}[2]{{#1}{\implies}{#2}}
 \newcommand{\body}{\vec{B}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\KB}{KB $\mathcal{K}$}
+
+%arg min
+\newcommand{\argmin}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{min}}\;}
 
 % Begin tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -420,7 +425,7 @@ output (see~\ref{ssec:filter_output}),
     \resizebox{!}{0.90\textheight}{%
     \input{diagrams/amie_flowchart.tex}
 }
-\caption{Flowchart of AMIE algorithm}
+\caption{Flowchart of \textsc{AMIE+} algorithm}
 \label{fig:amie_flowchart}
 \end{figure}
 \clearpage
@@ -435,6 +440,7 @@ impossible to explore. In AMIE, a set of \textbf{mining operators} is used to
 extend the rules iteratively and traverse the search space. 
 
 \subsubsection{Mining operators}
+\subsection{Pruning strategies}
 
 The mining operators add a new atom $r(x, y)$ to some rule $B_1 \land \ldots
 \land B_n$. To do that, \textbf{count projection queries} are implemented. Not
@@ -477,14 +483,6 @@ that are open.
     r(X, Y) \in \{ r(x, w), r(y, w), r(w, x), r(w, y) \}\,.
 \end{equation}
 
-\subsection{In-memory database}
-\label{ssec:in_memory_database}
-
-The efficient implementation of count projection queries was done implementing
-an in-memory database...
-
-Having the three columns O, R, and S
-
 \subsection{Filter the output}
 \label{ssec:filter_output}
 
@@ -508,12 +506,50 @@ After dequeuing a rule $r$ from $q$ we filter those ones\ldots
 \label{fig:accepted_for_output}
 \end{figure}
 
-\subsection{Pruning strategies}
+
+\subsection{In-memory database}
+\label{ssec:in_memory_database}
+
+The efficient implementation of count projection queries was done implementing
+an in-memory database...
+
+Having the three columns O, R, and S
+
+\subsubsection{Size Queries}
+\label{sssec:size_queries}
+
+\subsubsection{Existence Queries}
+\label{sssec:existence_queries}
+
+A role of the database is to know if there is a binding for a conjunctive query,
+
+\begin{figure}[H]
+\centering
+\resizebox{!}{0.70\textheight}{%
+    \input{diagrams/existence_queries.tex}
+}
+\caption{Flowchart of the \textsc{Existence Queries} algorithm}
+\label{fig:existence_queries}
+\end{figure}
+
+\subsubsection{Select Distinct Queries}
+\label{sssec:select_distinct_queries}
+
+\begin{figure}[H]
+\centering
+\resizebox{!}{0.99\textwidth}{%
+    \input{diagrams/select_distinct.tex}
+}
+\caption{Flowchart of the \textsc{Select Distinct Queries} algorithm}
+\label{fig:select_distinct_queries}
+\end{figure}
 
 \section{SANSA Stack}
 % Tikz figures for SANSA stack.
 
 SANSA~\cite{lehmann-2017-sansa-iswc} is a platform whose purpose is\ldots
+
+$\K$
 
 A similar work to SANSA is S2RDF~\cite{schatzle2016s2rdf}.
 

@@ -1,0 +1,125 @@
+% -------------------------------------------------
+% Set up a new layer for the debugging marks, and make sure it is on
+% top
+% this is a good example: https://tex.stackexchange.com/questions/254136/how-do-i-fix-spacing-on-paths-for-a-nested-tikz-flowchart
+
+\pgfdeclarelayer{marx}
+\pgfsetlayers{main,marx}
+% A macro for marking coordinates (specific to the coordinate naming
+% scheme used here). Swap the following 2 definitions to deactivate
+% marks.
+\providecommand{\cmark}[2][]{%
+  \begin{pgfonlayer}{marx}
+    \node [nmark] at (c#2#1) {#2};
+  \end{pgfonlayer}{marx}
+  } 
+\providecommand{\cmark}[2][]{\relax} 
+% -------------------------------------------------
+
+\begin{tikzpicture}[%
+    >=triangle 60,              % Nice arrows; your taste may be different
+    start chain=going below,    % General flow is top-to-bottom
+    node distance=7mm and 55mm, % Global setup of box spacing
+    every join/.style={norm},   % Default linetype for connecting boxes
+    ]
+
+{\small\ttfamily\selectfont
+% ------------------------------------------------------------------------------ 
+% A few box styles 
+% <on chain> *and* <on grid> reduce the need for manual relative
+% positioning of nodes
+\tikzset{
+  % ----------------------------------------------------------------------------
+  % Connector line styles for different parts of the diagram
+  base/.style={draw, on chain, on grid, align=center, minimum height=1cm, font={\small}},
+  notes/.style={node distance=13cm, align=right},
+  diam/.style={base, diamond, aspect=2, text width=5cm},
+  diam_small/.style={base, diamond, aspect=2, text width=4cm},
+  proc/.style={base, rectangle, text width=7cm},
+  proc_small/.style={base, rectangle, text width=8em},
+  term/.style={proc, rounded corners, text width=8cm},
+  % coord node style is used for placing corners of connecting lines
+  coord/.style={coordinate, on chain, on grid, node distance=55mm and 75mm},
+  % nmark node style is used for coordinate debugging marks
+  nmark/.style={draw, cyan, circle, font={\sffamily\bfseries}},
+  % ----------------------------------------------------------------------------
+  % Connector line styles for different parts of the diagram
+  norm/.style={->, draw, blue},
+  free/.style={->, draw, green},
+  cong/.style={->, draw, red},
+  it/.style={font={\small\itshape}}
+  % ----------------------------------------------------------------------------
+}
+% -------------------------------------------------
+% Start by placing the nodes
+% Use join to connect a node to the previous one a
+
+\node [term] (p0) {
+    conjuctive query, $B_1 \land B_2 \land \ldots \land B_n$;\\
+    \KB, knowledge base;\\
+};
+
+\node [term, join] (p0) {
+    $q = B_1 \land B_2 \land \ldots \land B_n$
+};
+
+\node [diam, join, fill=blue] (is_one) {
+    $n = 1$
+};
+
+\node [proc, join, fill=red] (parents) {
+    $s = \argmin{i}{size(B_i, \K)} $
+};
+
+\node [proc, join] () {
+    $q = q \setminus \{ B_s \}$
+};
+
+\node [diam, join] (is_empty) {
+    instantiations\\$b_s \in B_s$
+};
+
+\node [proc_small, join, fill=red] (parents_dequeue) {
+    $q' = q$ instantianted with bindings from $b_s$
+};
+
+\node [diam_small, join, fill=red] (check_confidence) {
+    Exists(q', $\K$)
+};
+
+\node [proc_small, join] () {
+    return $true$
+};
+
+\node [proc_small, join] (end) {end};
+\node [proc_small, left=of end] (true) { return $size(B_1, \K)$ };
+\node [proc_small, right=of end] (false) { return $false$ };
+
+% marks
+\node[coord, left=of is_one] (c0) {}; \cmark{0} 
+\node[coord, right=of is_empty] (c1) {}; \cmark{1} 
+\node[coord, left=of check_confidence] (c2) {}; \cmark{2} 
+\node[coord, right=of check_confidence] (c3) {}; \cmark{3} 
+\node[coord, right=of check_confidence] (c5) {}; \cmark{5} 
+
+% labels
+\path (is_one.south) to node [midway, xshift=1em] {no} (parents); 
+
+\path (is_one.west) to node [midway, yshift=1em] {yes} (c0); 
+\draw [*->] (is_one.west) -- (c0) -- (c2) |- (true);
+
+\path (is_empty.south) to node [midway, xshift=2.4em] {not empty} (parents_dequeue); 
+\path (is_empty.east) to node [midway, yshift=1em] {empty} (c1); 
+\draw [o->] (is_empty.east) -- (c1) -- (c3) |- (false);
+
+%\path (check_confidence.west) to node [midway, yshift=1em] {yes} (c2); 
+%\draw [*->] (check_confidence.west) -- (c2);
+
+%\path (check_confidence.east) to node [midway, yshift=1em] {no} (c3); 
+%\draw [o->] (check_confidence.east) -- (c3);
+
+\draw[->] (false.west) -- (end.east);
+\draw[->] (true.east) -- (end.west);
+
+}
+\end{tikzpicture}
