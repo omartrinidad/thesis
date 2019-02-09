@@ -25,9 +25,10 @@ Thesis Project
 \usepackage{graphicx}
 \usepackage[x11names]{xcolor}
 \usepackage{booktabs}
-\usepackage{float}
 \usepackage{afterpage}
 \usepackage{listings}
+\usepackage{floatrow}
+\usepackage{float}
 %\usepackage{venndiagram}
 
 \newcommand{\triple}[3]{{\itshape\textless#1\textgreater} {\bfseries#2} {\itshape\textless#3\textgreater}}
@@ -52,6 +53,43 @@ Thesis Project
 \colorlet{green}{DarkOliveGreen3!50}
 \colorlet{red}{IndianRed3!50}
 \colorlet{blue}{DeepSkyBlue3!50}
+
+% ------------------------------------------------------------------------------ 
+% A macro for marking coordinates (specific to the coordinate naming
+% scheme used here). Swap the following 2 definitions to deactivate
+% marks.
+\providecommand{\cmark}[2][]{%
+  \begin{pgfonlayer}{marx}
+    \node [nmark] at (c#2#1) {#2};
+  \end{pgfonlayer}{marx}
+  } 
+\providecommand{\cmark}[2][]{\relax} 
+
+% ------------------------------------------------------------------------------ 
+% A few box styles 
+% <on chain> *and* <on grid> reduce the need for manual relative
+% positioning of nodes
+\tikzset{
+  base/.style={draw, on chain, on grid, align=center, minimum height=1cm, font={\small}},
+  notes/.style={node distance=13cm, align=right},
+  diam/.style={base, diamond, aspect=2, text width=5cm},
+  diam_small/.style={base, diamond, aspect=2, text width=4cm},
+  proc/.style={base, rectangle, text width=7cm},
+  proc_small/.style={base, rectangle, text width=8em},
+  term/.style={proc, rounded corners, text width=8cm},
+  % coord node style is used for placing corners of connecting lines
+  coord/.style={coordinate, on chain, on grid, node distance=55mm and 75mm},
+  coord_inner/.style={coordinate, on chain, on grid, node distance=35mm and 55mm},
+  coord_inner_inner/.style={coordinate, on chain, on grid, node distance=25mm and 35mm},
+  % nmark node style is used for coordinate debugging marks
+  nmark/.style={draw, cyan, circle, font={\sffamily\bfseries}},
+  % ----------------------------------------------------------------------------
+  % Connector line styles for different parts of the diagram
+  norm/.style={->, draw, blue},
+  free/.style={->, draw, green},
+  cong/.style={->, draw, red},
+  it/.style={font={\small\itshape}}
+}
 
 % For every picture that defines or uses external nodes, you'll have to
 % apply the 'remember picture' style. To avoid some typing, we'll apply
@@ -278,22 +316,22 @@ repeated two times, hence, $hc(R) = 1/3$.
 \end{tikzpicture}
 
 The confidence measures are used to determine the quality of a rule. The
-\textbf{standard confidence} defined as 
+\textbf{standard confidence} defined as
 
 \begin{equation}
     \label{eq:stand_conf}
-    conf(\vec{B} \implies r(x, y)) = 
+    conf(\vec{B} \implies r(x, y)) =
              \dfrac{supp(\vec{B} \implies r(x, y))}
                    {\#(x, y): \exists z_1,\ldots,z_m : \vec{B}} %\,,
 \end{equation}
 
 \noindent is usually used in association rule mining in the context of market basket
 analysis and suppose a CWA universe, this setting is different to the one we are dealing with, but is a good reference. In AMIE, was proposed the \textbf{PCA
-confidence}, to deal with the rule mining problem in an OWA universe. 
+confidence}, to deal with the rule mining problem in an OWA universe.
 
 \begin{equation}
     \label{eq:stand_conf}
-    conf_{pca}(\vec{B} \implies r(x, y)) = 
+    conf_{pca}(\vec{B} \implies r(x, y)) =
                     \dfrac{supp(\vec{B} \implies r(x, y))}
                           {\#(x, y): \exists z_1,\ldots,z_m, y' :\vec{B} \land r(x, y')} \,,
 \end{equation}
@@ -406,26 +444,32 @@ correlation in the data.
 
 As mentioned before, AMIE+ uses the Partial Completeness Assumption (PCA) to
 guess the counter-examples, it also uses pruning strategies and approximations
-that allow exploring the search space more efficiently. 
+that allow exploring the search space more efficiently.
 
 As seen in the Figure~\ref{fig:amie_flowchart}, AMIE+ receives four parameters,
 the knowledge base KB $\mathcal{K}$, the minimum head coverage $minHC$, the
 maximum size of the rules $maxLen$, and the threshold in the confidence
-$minConf$. We initialize a queue $q$ with all the head atoms $r(x,y)$ and a
-list $out$ to save the result (blue).
+$minConf$. The queue $q$ is initialized  with all the head atoms $r(x,y)$, in
+the same way a list $out$ to save the result.
 
-We proceed to iterate and dequeue $q$, firstly we evaluate if the rule is accepted for
-output (see~\ref{ssec:filter_output}),
+Next, iteratevely $q$ is dequeued, the algorithms evaluates if the
+rule is accepted for output (see~\ref{ssec:filter_output}), if so, it is added
+to $out$.
+
+When the lenght of the rule is below the $maxLen$ threshold, the function $Refine$
+is executed.
 
 % consider this!
 % https://blogs.gnome.org/muelli/2011/04/perfectly-scale-an-image-to-the-rest-of-a-page-with-latex/
 \afterpage{%
 \begin{figure}[p]
 \centering
-    \resizebox{!}{0.90\textheight}{%
-    \input{diagrams/amie_flowchart.tex}
-}
-\caption{Flowchart of \textsc{AMIE+} algorithm}
+    \floatbox[{\capbeside\thisfloatsetup{capbesideposition={right,top},capbesidewidth=4cm}}]
+    {figure}[\FBwidth]
+    {\resizebox{!}{0.90\textheight}{%
+            \input{diagrams/amie_flowchart.tex}
+        }}
+    {\caption{Flowchart of \textsc{AMIE+} algorithm}}
 \label{fig:amie_flowchart}
 \end{figure}
 \clearpage
@@ -437,7 +481,7 @@ output (see~\ref{ssec:filter_output}),
 
 The combination of conjunctions of atoms form a huge search space, which is
 impossible to explore. In AMIE, a set of \textbf{mining operators} is used to
-extend the rules iteratively and traverse the search space. 
+extend the rules iteratively and traverse the search space.
 
 \subsubsection{Mining operators}
 \subsection{Pruning strategies}
@@ -457,7 +501,7 @@ every relation $r$ is tested, are select only those above the head-coverage thre
            commentstyle=\color{gray},
            mathescape=true
         ]
-SELECT $r$, COUNT($H$) 
+SELECT $r$, COUNT($H$)
 WHERE $H \land B_1 \land \ldots \land B_n \land r(X, Y)$
 SUCH THAT COUNT($H$) $\geq minHC \times size(H)$
 \end{lstlisting}
@@ -466,9 +510,9 @@ SUCH THAT COUNT($H$) $\geq minHC \times size(H)$
     \item $X$ and $Y$ are variables
     \item $H$ is the head
 \end{itemize}
- 
+
 \noindent \textbf{Dangling atom operator} ($\mathcal{O}_\mathcal{C}$): We add a new atom with a
-fresh variable $w$ and a shared variable with the rule, that is, 
+fresh variable $w$ and a shared variable with the rule, that is,
 
 \begin{equation}
     r(X, Y) \in \{ r(x, w), r(y, w), r(w, x), r(w, y) \}\,.
@@ -489,11 +533,11 @@ that are open.
 After dequeuing a rule $r$ from $q$ we filter those ones\ldots
 
 \begin{itemize}
-    \item that are not closed and not connected and whose confidence value is 
+    \item that are not closed and not connected and whose confidence value is
         below that the $minConf$ threshold (blue block in Fig~\ref{fig:accepted_for_output}),
     %\item that has lower confidence than the ones stored in $out$
-    \item whose refinements $B_1 \land \ldots \land B_n \land B_{n+1} \implies H$ 
-        have equal or lower confidence than their parent 
+    \item whose refinements $B_1 \land \ldots \land B_n \land B_{n+1} \implies H$
+        have equal or lower confidence than their parent
         $B_1 \land \ldots \land B_n \implies H$ (red blocks)
 \end{itemize}
 
@@ -533,13 +577,16 @@ A role of the database is to know if there is a binding for a conjunctive query,
 \end{figure}
 
 \subsubsection{Select Distinct Queries}
-\label{sssec:select_distinct_queries}
+\label{ssec:select_distinct_queries}
+
+As we see in the figure~\ref{fig:select_distinct_queries}, the algorithm finds
+the atom $B_s$ with the minimum number of instantiations. 
+
+If the projection variable $x$ is in the atom $B_s$ (color red in the diagram),
+then, the algorithm, traverse the instantiations $x$ in $x$.
 
 \begin{figure}[H]
 \centering
-\resizebox{!}{0.99\textwidth}{%
-    \input{diagrams/select_distinct.tex}
-}
 \caption{Flowchart of the \textsc{Select Distinct Queries} algorithm}
 \label{fig:select_distinct_queries}
 \end{figure}

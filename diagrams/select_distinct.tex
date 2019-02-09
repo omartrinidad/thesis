@@ -25,33 +25,6 @@
 
 {\small\ttfamily\selectfont
 % ------------------------------------------------------------------------------ 
-% A few box styles 
-% <on chain> *and* <on grid> reduce the need for manual relative
-% positioning of nodes
-\tikzset{
-  % ----------------------------------------------------------------------------
-  % Connector line styles for different parts of the diagram
-  base/.style={draw, on chain, on grid, align=center, minimum height=1cm, font={\small}},
-  notes/.style={node distance=13cm, align=right},
-  diam/.style={base, diamond, aspect=2, text width=5cm},
-  diam_small/.style={base, diamond, aspect=2, text width=4cm},
-  proc/.style={base, rectangle, text width=7cm},
-  proc_small/.style={base, rectangle, text width=8em},
-  term/.style={proc, rounded corners, text width=8cm},
-  % coord node style is used for placing corners of connecting lines
-  coord/.style={coordinate, on chain, on grid, node distance=46mm and 55mm},
-  coord_inner/.style={coordinate, on chain, on grid, node distance=35mm and 45mm},
-  % nmark node style is used for coordinate debugging marks
-  nmark/.style={draw, cyan, circle, font={\sffamily\bfseries}},
-  % ----------------------------------------------------------------------------
-  % Connector line styles for different parts of the diagram
-  norm/.style={->, draw, blue},
-  free/.style={->, draw, green},
-  cong/.style={->, draw, red},
-  it/.style={font={\small\itshape}}
-  % ----------------------------------------------------------------------------
-}
-% -------------------------------------------------
 % Start by placing the nodes
 % Use join to connect a node to the previous one a
 
@@ -69,7 +42,7 @@
 \node [term, join] () {
     $result = \{\}$
 };
-\node [diam, join, fill=blue] (x_in_B) {
+\node [diam, join] (x_in_B) {
     $x \in B_s$
 };
 
@@ -80,16 +53,16 @@
 % JA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\node [diam_small, below=of c0] (yes_) {
+\node [diam_small, below=of c0, fill=red] (yes_) {
     instantiations\\$x \in x$
 };
-\node [proc, join] () {
+\node [proc, join, fill=red, label={a}] () {
     $q' = q$ instantianted with bindings from $b_s$
 };
-\node [diam_small, join] (exists) {
+\node [diam_small, join, fill=red] (exists) {
     \textsc{exists}(q', $\K$)
 };
-\node [proc_small, join] (yes_result) {
+\node [proc_small, join, fill=red] (yes_result) {
     $result.add(x)$
 };
 
@@ -97,16 +70,16 @@
 % NEIN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\node [proc_small, below=of c1] (no_) {
+\node [proc_small, below=of c1, fill=green] (no_) {
     $q = q \setminus \{ B_s \}$
 };
-\node [diam_small, join] (b_in_B) {
+\node [diam_small, join, fill=green] (b_in_B) {
     instantiations\\$b_s \in B_s$
 };
-\node [proc, join] () {
+\node [proc, join, fill=green] () {
     $q' = q$ instantianted with bindings from $b_s$
 };
-\node [proc, join] (no_result) {
+\node [proc, join, fill=green] (no_result) {
     $result.add(\textsc{select}(x, q', \K))$
 };
 

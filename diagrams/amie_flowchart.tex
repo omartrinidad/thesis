@@ -5,16 +5,7 @@
 
 \pgfdeclarelayer{marx}
 \pgfsetlayers{main,marx}
-% A macro for marking coordinates (specific to the coordinate naming
-% scheme used here). Swap the following 2 definitions to deactivate
-% marks.
-\providecommand{\cmark}[2][]{%
-  \begin{pgfonlayer}{marx}
-    \node [nmark] at (c#2#1) {#2};
-  \end{pgfonlayer}{marx}
-  } 
-\providecommand{\cmark}[2][]{\relax} 
-% -------------------------------------------------
+
 
 \begin{tikzpicture}[%
     >=triangle 60,              % Nice arrows; your taste may be different
@@ -24,48 +15,24 @@
     ]
 
 {\small\ttfamily\selectfont
-% ------------------------------------------------------------------------------ 
-% A few box styles 
-% <on chain> *and* <on grid> reduce the need for manual relative
-% positioning of nodes
-\tikzset{
-  base/.style={draw, on chain, on grid, align=center, minimum height=1cm, font={\small}},
-  notes/.style={node distance=13cm, align=right},
-  diam/.style={base, diamond, aspect=2, text width=5cm},
-  diam_small/.style={base, diamond, aspect=2, text width=4cm},
-  proc/.style={base, rectangle, text width=7cm},
-  proc_small/.style={base, rectangle, text width=8em},
-  term/.style={proc, rounded corners, text width=8cm},
-  % coord node style is used for placing corners of connecting lines
-  coord/.style={coordinate, on chain, on grid, node distance=55mm and 65mm},
-  coord2/.style={coordinate, on chain, on grid, node distance=35mm and 55mm},
-  % nmark node style is used for coordinate debugging marks
-  nmark/.style={draw, cyan, circle, font={\sffamily\bfseries}},
-  % ----------------------------------------------------------------------------
-  % Connector line styles for different parts of the diagram
-  norm/.style={->, draw, blue},
-  free/.style={->, draw, green},
-  cong/.style={->, draw, red},
-  it/.style={font={\small\itshape}}
-}
 % -------------------------------------------------
 % Start by placing the nodes
 % Use join to connect a node to the previous one a
 
-\node [term] (p0) {
+\node [term] () {
     KB $\mathcal{K}$, knowledge base;\\
     $minHC$, minimum head coverage;\\
     $maxLen$, size of rules;\\
     $minConf$, threshold in the confidence\\
 };
-\node [proc, join] (q) {
+\node [proc, join] () {
     out = $\langle\rangle$ \\
     q = [$r_1(x, y)$, $r_2(x, y)$,\ldots, $r_m(x,y)$]
 };
 \node [diam, join] (is_empty) {
     $\lnot q.isEmpty()$
 };
-\node [proc_small, join] (dequeue) {
+\node [proc_small, join] () {
     r = q.dequeue()
 };
 \node [diam_small, font={\small}, join] (accepted_for_output) {
@@ -80,14 +47,11 @@
 \node [proc_small, join] (refinement) {
     R(r) = Refine(r)
 };
-\node [diam_small, join] (p9) {
-    $\lnot$R(r).isEmpty()
-};
-\node [proc_small, join] (dequeue_refinement) {
-    $r_c$ = R(r).dequeue()\\
+\node [diam_small, join] (R_is_empty) {
+    $r_c \in R(r)$
 };
 \node [diam_small, join] (check) {
-    hc($r_c$) $\leq$ minHC \& $r_c$ $\notin$ q
+    hc($r_c$) $\geq$ minHC \& $r_c$ $\notin$ q
 };
 \node [proc_small, join] (p11) {
     q.enqueue($r_c$)
@@ -95,20 +59,45 @@
 \node [proc_small, below of = p11, node distance = 2.6cm] (return) {return out};
 \node [proc_small, join] (end) {end};
 
+% marks
+\node[coord_inner_inner, right= of check] (c0) {}; \cmark{0}
+\node[coord_inner_inner, below=1cm of p11] (c1) {}; \cmark{1}
+\node[coord_inner_inner, left=of p11] (c2) {}; \cmark{2}
+\node[coord_inner_inner, left=of R_is_empty] (c3) {}; \cmark{3}
 
-\draw[->] (check.east) -- ++(0.66,0) -- ++(0,-0.05) -- node [near start] {no} ++(0,-3.0) -- ++(-7,0) -- ++(0, 7) -- (p9.north);
-\draw[->] (is_empty.east)  -- ++(0,0.0) -- ++(2.35,0) -- node [near start] {no} ++(0,-22.3) -- ++(-4,0) -- (return.north);
-\draw[->] (accepted_for_output.east)  -- ++(0,0.0) -- ++(1.35,0) -- node [near start] {no} ++(0,-3.3) -- (check_max_len.north);
-\draw[->] (check_max_len.east)  -- ++(0,0.0) -- ++(1.35,0) -- node [near start] {no} ++(0, -12.5) -- ++(-12,0) -- ++(0, 21) -- (is_empty.north);
+\node[coord_inner, right=of check_max_len] (c4) {}; \cmark{4}
+\node[coord_inner, below=1cm of c1] (c5) {}; \cmark{5}
+\node[coord_inner, left=of is_empty] (c6) {}; \cmark{6}
+
+\node[coord, right=of is_empty] (c7) {}; \cmark{7}
+
+\node[coord_inner, right=of accepted_for_output] (c8) {}; \cmark{8}
+
+%\node[coord, right=of is_empty] (c0) {}; \cmark{0}
+%\node[coord_inner, right=of accepted_for_output] (c1) {}; \cmark{1}
+
+\draw[->] (check.east) -- (c0) |- (c1) -| (c3) -- (R_is_empty);
+\draw[dashed, -o] (p11.west) -- (c2);
+
+\draw[->] (check_max_len.east) -- (c4) |- (c5) -| (c6) -- (is_empty);
+
+\draw[->] (is_empty.east) -- (c7) |- (return);
+
+\draw[->] (accepted_for_output.east) -- (c8) |- (check_max_len.north);
+
+%\draw[->] (check.east) -- ++(0.66,0) -- ++(0,-0.05) -- node [near start] {no} ++(0,-3.0) -- ++(-7,0) -- ++(0, 7) -- (p9.north);
+%\draw[->] (is_empty.east)  -- ++(0,0.0) -- ++(2.35,0) -- node [near start] {no} ++(0,-22.3) -- ++(-4,0) -- (return.north);
+%\draw[->] (accepted_for_output.east)  -- ++(0,0.0) -- ++(1.35,0) -- node [near start] {no} ++(0,-3.3) -- (check_max_len.north);
+%\draw[->] (check_max_len.east)  -- ++(0,0.0) -- ++(1.35,0) -- node [near start] {no} ++(0, -12.5) -- ++(-12,0) -- ++(0, 21) -- (is_empty.north);
 
 % notes
-\node [notes, right of=q] {q is a queue of rules containing\\all head atoms (size 1)};
-\node [notes, right of=is_empty] {Iterate until the queue is empty};
-\node [notes, right of=refinement] {The refinement is the expansion of the rule,\\to produce a set of new rules};
-\node [notes, right of=dequeue] {Dequeue the rules};
-\node [notes, right of=accepted_for_output] {Decide whether to output a rule,\\check for closeness and connectedness,\\among other things, see algorithm 2};
-\node [notes, right of=check] {Check if the rules are pruned (by the head coverage) and duplicated};
-\node [notes, right of=check_max_len] {Check if the rule exceeds the maximum number of atoms};
+%\node [notes, right of=q] {q is a queue of rules containing\\all head atoms (size 1)};
+%\node [notes, right of=is_empty] {Iterate until the queue is empty};
+%\node [notes, right of=refinement] {The refinement is the expansion of the rule,\\to produce a set of new rules};
+%\node [notes, right of=dequeue] {Dequeue the rules};
+%\node [notes, right of=accepted_for_output] {Decide whether to output a rule,\\check for closeness and connectedness,\\among other things, see algorithm 2};
+%\node [notes, right of=check] {Check if the rules are pruned (by the head coverage) and duplicated};
+%\node [notes, right of=check_max_len] {Check if the rule exceeds the maximum number of atoms};
 
 }
 \end{tikzpicture}
