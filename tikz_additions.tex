@@ -1,0 +1,62 @@
+\usepackage{tikz}
+    \usetikzlibrary{shapes.geometric, backgrounds, calc}
+    \usetikzlibrary{arrows}
+    \usetikzlibrary{arrows.meta}
+    \usetikzlibrary{positioning}
+    \usetikzlibrary{chains}
+
+% Set up a few colours
+\colorlet{green}{DarkOliveGreen3!50}
+\colorlet{red}{IndianRed3!50}
+\colorlet{blue}{DeepSkyBlue3!50}
+
+% ------------------------------------------------------------------------------
+% A macro for marking coordinates (specific to the coordinate naming
+% scheme used here). Swap the following 2 definitions to deactivate
+% marks.
+\providecommand{\cmark}[2][]{%
+  \begin{pgfonlayer}{marx}
+    \node [nmark] at (c#2#1) {#2};
+  \end{pgfonlayer}{marx}
+  }
+\providecommand{\cmark}[2][]{\relax}
+
+% ------------------------------------------------------------------------------
+% A few box styles
+% <on chain> *and* <on grid> reduce the need for manual relative
+% positioning of nodes
+\tikzset{
+  base/.style={draw, on chain, on grid, align=center, minimum height=1cm, font={\small}},
+  notes/.style={node distance=13cm, align=right},
+  diam/.style={base, diamond, aspect=2, text width=5cm},
+  diam_small/.style={base, diamond, aspect=2, text width=4cm},
+  proc/.style={base, rectangle, text width=7cm},
+  proc_small/.style={base, rectangle, text width=8em},
+  term/.style={proc, rounded corners, text width=8cm},
+  % coord node style is used for placing corners of connecting lines
+  coord/.style={coordinate, on chain, on grid, node distance=55mm and 75mm},
+  coord_inner/.style={coordinate, on chain, on grid, node distance=35mm and 55mm},
+  coord_inner_inner/.style={coordinate, on chain, on grid, node distance=25mm and 35mm},
+  % nmark node style is used for coordinate debugging marks
+  nmark/.style={draw, cyan, circle, font={\sffamily\bfseries}},
+  % ----------------------------------------------------------------------------
+  % Connector line styles for different parts of the diagram
+  norm/.style={->, draw, blue},
+  free/.style={->, draw, green},
+  cong/.style={->, draw, red},
+  it/.style={font={\small\itshape}}
+}
+
+% For every picture that defines or uses external nodes, you'll have to
+% apply the 'remember picture' style. To avoid some typing, we'll apply
+% the style to all pictures.
+\tikzstyle{every picture}+=[remember picture]
+
+% By default all math in TikZ nodes are set in inline mode. Change this to
+% displaystyle so that we don't get small fractions.
+\everymath{\displaystyle}
+
+% Introduce a new counter for counting the nodes needed for circling
+\newcounter{nodecount}
+% Command for making a new node and naming it according to the nodecount counter
+\newcommand\tabnode[1]{\addtocounter{nodecount}{1} \tikz \node (\arabic{nodecount}) {#1};}

@@ -12,8 +12,8 @@
   \begin{pgfonlayer}{marx}
     \node [nmark] at (c#2#1) {#2};
   \end{pgfonlayer}{marx}
-  } 
-\providecommand{\cmark}[2][]{\relax} 
+  }
+\providecommand{\cmark}[2][]{\relax}
 % -------------------------------------------------
 
 \begin{tikzpicture}[%
@@ -24,103 +24,101 @@
     ]
 
 {\small\ttfamily\selectfont
-% ------------------------------------------------------------------------------ 
+% ------------------------------------------------------------------------------
 % Start by placing the nodes
 % Use join to connect a node to the previous one a
 
 \node [term] () {
-    projection variable, $x$;\\
-    conjuctive query, $B_1 \land B_2 \land \ldots \land B_n$;\\
-    \KB, knowledge base;\\
+    selection variable, $x$;\\
+    a projection atom attached to a conjuctive query, $R(X, Y) \land B_1 \land B_2 \land \ldots \land B_n$;\\
+    a threshold $k$;\\
+    knowledge base, \KB;\\
 };
 \node [term, join] () {
+    $map = \{\}$\\
     $q = B_1 \land B_2 \land \ldots \land B_n$
 };
-\node [term, join] () {
-    $s = \argmin{i}{size(B_i, \K)} $
-};
-\node [term, join] () {
-    $result = \{\}$
-};
 \node [diam, join] (x_in_B) {
-    $x \in B_s$
+    $x \in R(X, Y)$
 };
 
-\node[coord, left=of x_in_B] (c0) {}; \cmark{0} 
-\node[coord, right=of x_in_B] (c1) {}; \cmark{1} 
+\node[coord, left=of x_in_B] (c0) {}; \cmark{0}
+\node[coord, right=of x_in_B] (c1) {}; \cmark{1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % JA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \node [diam_small, below=of c0, fill=red] (yes_) {
-    instantiations\\$\hat{x} \in x$
+    instantiations\\
+    $r(x, y) \in R(X, Y)$
 };
 \node [proc, join, fill=red, label={a}] () {
-    $q' = q$ instantianted with bindings from $b_s$
+    $q' = q$\\
+    replace R by r, X by x, Y by y\\
 };
 \node [diam_small, join, fill=red] (exists) {
     \textsc{exists}(q', $\K$)
 };
 \node [proc_small, join, fill=red] (yes_result) {
-    $result.add(x)$
+    $map[x]++$
 };
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % NEIN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\node [proc_small, below=of c1, fill=green] (no_) {
-    $q = q \setminus \{ B_s \}$
-};
-\node [diam_small, join, fill=green] (b_in_B) {
-    instantiations\\$b_s \in B_s$
+\node [diam_small, below=of c1, fill=green] (no_) {
+    instantiations\\
+    $r(x, y) \in R(X, Y)$
 };
 \node [proc, join, fill=green] () {
-    $q' = q$ instantianted with bindings from $b_s$
+    $q' = q$\\
+    replace R by r, X by x, Y by y\\
 };
-\node [proc, join, fill=green] (no_result) {
-    $result.add(\textsc{select}(x, q', \K))$
+\node [proc, join, fill=green] () {
+    $\mathcal{X} = \textsc{select}(x, q', \K)$
 };
-
+\node [diam_small, join, fill=green] (x_in_X) {
+    $x \in \mathcal{X}$
+};
+\node [proc_small, join, fill=green] (no_result) {
+    $map[x]++$
+};
 
 % marks
-\node[coord_inner, left=of yes_result] (c3) {}; \cmark{3} 
-\node[coord_inner, below right=of exists] (c5) {}; \cmark{5} 
+\node[coord_inner, left=of yes_result] (c3) {}; \cmark{3}
+\node[coord_inner, below right=of exists] (c5) {}; \cmark{5}
 
-\node[coord, right=of yes_result] (c6) {}; \cmark{6} 
-\node[coord_inner, left=of b_in_B] (c7) {}; \cmark{7} 
+\node[coord, below left=of x_in_X] (c6) {}; \cmark{6}
 
-\node[coord_inner, right=of b_in_B] (c8) {}; \cmark{8} 
+\node[coord_inner, right=of no_] (c8) {}; \cmark{8}
+
+\node[coord_inner_inner, right=of x_in_X] (c2) {}; \cmark{2}
+\node[coord_inner_inner, below=1cm of no_result] (c4) {}; \cmark{4}
+\node[coord_inner, left=of no_result] (c9) {}; \cmark{9}
 
 % ending nodes
-% fail
-%\node [proc, below=of yes_result] at ($(no_result)!0.5!(yes_result)$) {b};
-
-% fail
-%\path (yes_result) -- (no_result) node[midway below] (b) {b};
-
-% fail
-%\node [below right=of yes_result] (a) {};
-%\node [below left=of no_result] (b) {};
-%\node [proc, below=of yes_result] at ($(a)!0.5!(b)$) {x};
-\node [proc, below=1.5cm of c6] (return) {return $result$};
-\node [proc, join] () { end };
+\node [proc, below=1.5cm of c6] (return) {$map = \{ x \rightarrow n\} \in map: n \geq k$};
+\node [proc, join] () {return $map$};
+\node [proc, join] () {end};
 
 % labels
-\path (x_in_B.west) to node [midway, yshift=1em] {yes} (c0); 
+\path (x_in_B.west) to node [midway, yshift=1em] {yes} (c0);
 \draw [*->] (x_in_B.west) -- (c0) -- (yes_.north);
 
-\path (x_in_B.east) to node [midway, yshift=1em] {no} (c1); 
+\path (x_in_B.east) to node [midway, yshift=1em] {no} (c1);
 \draw [o->] (x_in_B.east) -- (c1) -- (no_.north);
 
-\draw [->] (yes_result.west) -- (c3) |- (yes_.west);
-\draw [-o] (exists.east) -| (c5) -| (c3);
-
-\draw [->] (no_result.west) -| (c7) -- (b_in_B.west);
+\draw [dashed, -o] (yes_result.west) -- (c3);
+\draw [->] (c3) |- (yes_.west);
+\draw [-] (exists.east) -| (c5) -| (c3);
 
 \draw [->] (yes_.east) -| (return.north);
-\draw [-o] (b_in_B.east) -| (c8) |- (c6);
+\draw [-o] (no_.east) -| (c8) |- (c6);
+
+\draw [dashed, -o] (no_result.west) -- (c9);
+\draw [->] (x_in_X.east) -- (c2) |- (c4) -| (c9) |- (no_.west);
 
 }
 \end{tikzpicture}

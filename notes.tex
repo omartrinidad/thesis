@@ -21,7 +21,6 @@ Thesis Project
 
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage[x11names]{xcolor}
 \usepackage{booktabs}
@@ -29,6 +28,7 @@ Thesis Project
 \usepackage{listings}
 \usepackage{floatrow}
 \usepackage{float}
+\usepackage{caption}
 %\usepackage{venndiagram}
 
 \newcommand{\triple}[3]{{\itshape\textless#1\textgreater} {\bfseries#2} {\itshape\textless#3\textgreater}}
@@ -42,69 +42,7 @@ Thesis Project
 \newcommand{\argmin}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{min}}\;}
 
 % Begin tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\usepackage{tikz}
-    \usetikzlibrary{shapes.geometric, backgrounds, calc}
-    \usetikzlibrary{arrows}
-    \usetikzlibrary{positioning}
-    \usetikzlibrary{chains}
-
-% Set up a few colours
-\colorlet{green}{DarkOliveGreen3!50}
-\colorlet{red}{IndianRed3!50}
-\colorlet{blue}{DeepSkyBlue3!50}
-
-% ------------------------------------------------------------------------------ 
-% A macro for marking coordinates (specific to the coordinate naming
-% scheme used here). Swap the following 2 definitions to deactivate
-% marks.
-\providecommand{\cmark}[2][]{%
-  \begin{pgfonlayer}{marx}
-    \node [nmark] at (c#2#1) {#2};
-  \end{pgfonlayer}{marx}
-  } 
-\providecommand{\cmark}[2][]{\relax} 
-
-% ------------------------------------------------------------------------------ 
-% A few box styles 
-% <on chain> *and* <on grid> reduce the need for manual relative
-% positioning of nodes
-\tikzset{
-  base/.style={draw, on chain, on grid, align=center, minimum height=1cm, font={\small}},
-  notes/.style={node distance=13cm, align=right},
-  diam/.style={base, diamond, aspect=2, text width=5cm},
-  diam_small/.style={base, diamond, aspect=2, text width=4cm},
-  proc/.style={base, rectangle, text width=7cm},
-  proc_small/.style={base, rectangle, text width=8em},
-  term/.style={proc, rounded corners, text width=8cm},
-  % coord node style is used for placing corners of connecting lines
-  coord/.style={coordinate, on chain, on grid, node distance=55mm and 75mm},
-  coord_inner/.style={coordinate, on chain, on grid, node distance=35mm and 55mm},
-  coord_inner_inner/.style={coordinate, on chain, on grid, node distance=25mm and 35mm},
-  % nmark node style is used for coordinate debugging marks
-  nmark/.style={draw, cyan, circle, font={\sffamily\bfseries}},
-  % ----------------------------------------------------------------------------
-  % Connector line styles for different parts of the diagram
-  norm/.style={->, draw, blue},
-  free/.style={->, draw, green},
-  cong/.style={->, draw, red},
-  it/.style={font={\small\itshape}}
-}
-
-% For every picture that defines or uses external nodes, you'll have to
-% apply the 'remember picture' style. To avoid some typing, we'll apply
-% the style to all pictures.
-\tikzstyle{every picture}+=[remember picture]
-
-% By default all math in TikZ nodes are set in inline mode. Change this to
-% displaystyle so that we don't get small fractions.
-\everymath{\displaystyle}
-
-% Introduce a new counter for counting the nodes needed for circling
-\newcounter{nodecount}
-% Command for making a new node and naming it according to the nodecount counter
-\newcommand\tabnode[1]{\addtocounter{nodecount}{1} \tikz \node (\arabic{nodecount}) {#1};}
-
+\input{tikz_additions.tex}
 % End tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -551,45 +489,113 @@ After dequeuing a rule $r$ from $q$ we filter those ones\ldots
 \end{figure}
 
 
-\subsection{In-memory database}
+\subsection{In-memory database and queries}
 \label{ssec:in_memory_database}
 
 The efficient implementation of count projection queries was done implementing
-an in-memory database...
+an in-memory database. The database has three columns, for objects, relations,
+and subjects: $O$, $R$, and $S$.
 
-Having the three columns O, R, and S
-
-\subsubsection{Size Queries}
-\label{sssec:size_queries}
-
-\subsubsection{Existence Queries}
-\label{sssec:existence_queries}
-
-A role of the database is to know if there is a binding for a conjunctive query,
+Every permutation of these columns is called \textit{fact index}. For every
+fact index, we create a hash table that maps the first column to a second hash
+table. The second hash table maps elements of the second column to a set of
+elements in the third column.
 
 \begin{figure}[H]
 \centering
-\resizebox{!}{0.70\textheight}{%
+    \input{diagrams/db.tex}
+\caption{A diagram showing how the in-memory database is structured.}
+\label{fig:db}
+\end{figure}
+
+Also, in the database we find \textit{aggregated indexes}, where the aggregated
+number of facts are stored. Those indexes are subject $S$, predicate $P$, and object $O$.
+
+\subsubsection{Queries}
+\label{sssec:queries}
+
+Already defined the database, we are interested in \textit{asking questions} to
+it. There are seven types of queries:
+
+\begin{itemize}
+    \item Size,
+    \item Existence,
+    \item Select distinct,
+    \item Count and
+    \item Count projection
+\end{itemize}
+
+% http://www.cs.sjsu.edu/faculty/pearce/modules/lectures/prolog/kbase.htm
+\noindent \textbf{Size}: We can determine \textit{how many times an
+atom it does appear in a database}, for example, if we want to know the size of
+the query \triple{x}{isParentOf}{y}, we look at the aggregated index $P$, that
+stores the number of triples for every relation.
+
+\noindent \textbf{Existence}: We want to answer if \textit{there are bindings
+for a conjunctive query}. The algorithm~\ref{fig:existence_queries} leads with
+this issue.
+
+\begin{figure}[H]
+\captionsetup{singlelinecheck=off}
+\centering
+    \floatbox[{\capbeside\thisfloatsetup{capbesideposition={right,top},capbesidewidth=5cm}}]
+    {figure}[\FBwidth]
+    {\resizebox{!}{0.60\textheight}{%
     \input{diagrams/existence_queries.tex}
-}
-\caption{Flowchart of the \textsc{Existence Queries} algorithm}
-\label{fig:existence_queries}
+    }}
+    {
+        \caption[]{\textsc{Existence Queries} algorithm.
+        \newline \newline The input is a conjunctive query and the knowledge base.
+        \newline \newline When the query has only one atom, we use simply the function $size$ to determine if has bindings, as seen before.
+        \newline \newline If not, we select the atom $B_s$ with the minumum number of instantiations, and save the remaining atoms as $q$.
+        \newline \newline We traverse the instantiations $b_s$ of $B_s$.
+        \newline \newline We join the instantiations to the remaining atoms $q$ and run the process recursively.
+        }
+    \label{fig:existence_queries}
+    }
 \end{figure}
 
-\subsubsection{Select Distinct Queries}
-\label{ssec:select_distinct_queries}
-
-As we see in the figure~\ref{fig:select_distinct_queries}, the algorithm finds
-the atom $B_s$ with the minimum number of instantiations. 
-
-If the projection variable $x$ is in the atom $B_s$ (color red in the diagram),
-then, the algorithm, traverse the instantiations $x$ in $x$.
+\noindent \textbf{Select distinct}: In figure~\ref{fig:select_distinct} we see
+another query.
 
 \begin{figure}[H]
 \centering
-\caption{Flowchart of the \textsc{Select Distinct Queries} algorithm}
-\label{fig:select_distinct_queries}
+    \resizebox{!}{0.65\textheight}{%
+    \input{diagrams/select_distinct.tex}
+    }
+    \caption[\textsc{Select Distinct} algorithm.]
+    {\textsc{Select Distinct} algorithm.
+        \newline \newline The input is a conjunctive query and the knowledge base.
+        Firstly, it finds the atom $B_s$ with the minimum number of instantiations.
+        \newline \newline \textbf{If the projection variable $x$ is in the atom $B_s$}. We traverse the instantiations $x$ of $x$.
+        \newline \newline The atoms.
+        \newline \newline \textbf{If the projection variable $x$ is NOT in the atom $B_s$}. We traverse the instantiations $x$ of $x$.
+    }
+    \label{fig:select_distinct}
 \end{figure}
+
+\noindent \textbf{Count}: 
+
+\noindent \textbf{Count projection}: With this type of query we determine the
+relations and instances for new atoms in the refinement phase. The flowchart is
+shown in Fig.~\ref{fig:select_distinct}. 
+
+As input, we have a selection variable $x$, a projection atom $R(X, Y)$ that is linked
+to a conjuctive query, we also have a threshold $k$, 
+
+\begin{figure}[H]
+\centering
+    \resizebox{!}{0.65\textheight}{%
+    \input{diagrams/count_projection.tex}
+    }
+    \caption[\textsc{Count Projection} algorithm.]
+    {\textsc{Count Projection} algorithm.
+        \newline \newline 
+    }
+    \label{fig:select_distinct}
+\end{figure}
+
+The algorithm returns a
 
 \section{SANSA Stack}
 % Tikz figures for SANSA stack.
