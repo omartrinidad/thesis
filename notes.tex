@@ -268,7 +268,7 @@ analysis and suppose a CWA universe, this setting is different to the one we are
 confidence}, to deal with the rule mining problem in an OWA universe.
 
 \begin{equation}
-    \label{eq:stand_conf}
+    \label{eq:pca_conf}
     conf_{pca}(\vec{B} \implies r(x, y)) =
                     \dfrac{supp(\vec{B} \implies r(x, y))}
                           {\#(x, y): \exists z_1,\ldots,z_m, y' :\vec{B} \land r(x, y')} \,,
@@ -449,14 +449,14 @@ SUCH THAT COUNT($H$) $\geq minHC \times size(H)$
     \item $H$ is the head
 \end{itemize}
 
-\noindent \textbf{Dangling atom operator} ($\mathcal{O}_\mathcal{C}$): We add a new atom with a
+\noindent \textbf{Dangling atom operator} ($\mathcal{O}_\mathcal{D}$): We add a new atom with a
 fresh variable $w$ and a shared variable with the rule, that is,
 
 \begin{equation}
     r(X, Y) \in \{ r(x, w), r(y, w), r(w, x), r(w, y) \}\,.
 \end{equation}
 
-\noindent \textbf{Closing atom operator} ($\mathcal{O}_\mathcal{D}$): We aim to close the variables
+\noindent \textbf{Closing atom operator} ($\mathcal{O}_\mathcal{C}$): We aim to close the variables
 that are open.
 
 \noindent \textbf{Instantiated atom operator} ($\mathcal{O}_\mathcal{I}$):
@@ -487,7 +487,6 @@ After dequeuing a rule $r$ from $q$ we filter those ones\ldots
 \caption{Diagram of the rule filtering.}
 \label{fig:accepted_for_output}
 \end{figure}
-
 
 \subsection{In-memory database and queries}
 \label{ssec:in_memory_database}
@@ -580,8 +579,17 @@ another query.
 relations and instances for new atoms in the refinement phase. The flowchart is
 shown in Fig.~\ref{fig:select_distinct}. 
 
-As input, we have a selection variable $x$, a projection atom $R(X, Y)$ that is linked
-to a conjuctive query, we also have a threshold $k$, 
+As input, we have a selection variable $x$, a projection atom $R(X, Y)$ or $H$ that is
+linked to a conjuctive query, we also have a threshold $k$ and the knowledge
+base. 
+
+A hash table $map$ is initialized and the variable $q$ stores the atoms.
+
+We verify that $x$ is present in the projection atom.
+
+If it is present. We go through the instantiations of $H$, and check if the 
+
+If it is not present.
 
 \begin{figure}[H]
 \centering
@@ -596,6 +604,55 @@ to a conjuctive query, we also have a threshold $k$,
 \end{figure}
 
 The algorithm returns a
+
+\section{Improvements in AMIE+}
+
+After the first publication, the authors introduced enhancements in the AMIE algorithm:
+
+\begin{itemize}
+    \item Speeding up the rule refinement.
+    \item Speeding up the confidence evaluation.
+\end{itemize}
+
+\subsection{Speeding up rule refinement}
+
+In order to enhance the rule refinement, some \textit{kind of stop conditions},
+are applied. The first case is related to the \textbf{maximum rule length}:
+
+\begin{itemize}
+    \item If the size of the rule is \textbf{$maxLen -1$} we avoid to apply the
+        dangling-atom operator $\mathcal{O}_\mathcal{D}$ because the result is a
+        non-closed rule.
+    \item With the same rule and having more than two non-closed variables:
+        \begin{itemize}
+            \item We avoid the closing atom operator $\mathcal{O}_\mathcal{C}$ 
+                because we can only close at most two variables.
+            \item We avoid the instantiation operator $\mathcal{O}_\mathcal{I}$
+                because of the same reason.
+        \end{itemize}
+\end{itemize}
+
+% ToDo: example
+Also, we cease adding atoms when the rule becomes a \textbf{perfect rule}, that
+is, when it accomplishes 100\% PCA confidence.
+
+% ToDo: example and understand better
+There is an special case, when adding a new dangling atom will not decrease the
+support of a rule:
+
+\begin{itemize}
+    \item when the relation in the added dangling atom is already in the rule and
+    \item there is also a variable in common.
+\end{itemize}
+
+In this escenario, adding a new atom does not restrict the support of the rule.
+So, we can \textbf{simplify the projection query} ignoring the added atom.
+
+\subsection{Speeding up confidence evaluation through confidence approximation}
+
+Some \textit{intuitevely bad} rules can lead to expensive confidence
+calculation. To overcome this problem, a \textbf{confidence approximation}
+technique was proposed.
 
 \section{SANSA Stack}
 % Tikz figures for SANSA stack.

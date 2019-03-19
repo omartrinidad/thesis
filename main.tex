@@ -122,9 +122,43 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Language bias}
+%\begin{frame}{Language bias}
+%    \begin{itemize}
+%        \item Language bias are constraints whose aim is \textit{limit the size of the search space}.
+%    \end{itemize}
+%\end{frame}
+
+\subsection{Confidence and support}
+
+\begin{frame}{Standard Confidence}
+\begin{equation}
+    \label{eq:stand_conf}
+    conf(\vec{B} \implies r(x, y)) =
+             \dfrac{supp(\vec{B} \implies r(x, y))}
+                   {\#(x, y): \exists z_1,\ldots,z_m : \vec{B}} %\,,
+\end{equation}
+\end{frame}
+
+\begin{frame}{PCA Confidence}
+\begin{equation}
+    \label{eq:pca_conf}
+    conf_{pca}(\vec{B} \implies r(x, y)) =
+                    \dfrac{supp(\vec{B} \implies r(x, y))}
+                          {\#(x, y): \exists z_1,\ldots,z_m, y' :\vec{B} \land r(x, y')} \,,
+\end{equation}
+\end{frame}
+
+\subsection{Confidence evaluation}
+\begin{frame}{Confidence evaluation}
     \begin{itemize}
-        \item Language bias are constraints whose aim is \textit{limit the size of the search space}.
+       \item 
+    \end{itemize}
+\end{frame}
+
+\subsection{Rule refinement}
+\begin{frame}{Rule refinement}
+    \begin{itemize}
+       \item 
     \end{itemize}
 \end{frame}
 
@@ -196,6 +230,49 @@
     \caption{Flowchart of the count projection query algorithm}
     \label{fig:count_projection}
 \end{figure}
+\end{frame}
+
+\section{AMIE+}
+\begin{frame}{AMIE+: Enhancements}
+	\begin{itemize}
+   		\item Some stop conditions were added 
+	\end{itemize}
+\end{frame}
+
+\subsection{Speeding up rule refinements}
+\begin{frame}{Speeding up rule refinements}
+
+    \begin{block}{Maximum rule length}
+        We do not apply a \textit{mining operator} if the size of the generated rule is 
+        larger than the \textbf{$maxLen$} threshold.
+	\end{block}
+
+    % ToDo:
+    % - Find an analogy for this cases, like you do not bet if you know that you are going to lose...
+    % - Make an example
+	\begin{itemize}
+        \item If the size of the rule is \textbf{$maxLen -1$}\ldots
+	        \begin{itemize}
+                \item avoid the $\mathcal{O}_\mathcal{D}$ because the results is a non-closed rule.
+	        \end{itemize}
+        \item If the size of the rule is \textbf{$maxLen -1$} and have more than two non-closed variables\ldots
+	        \begin{itemize}
+                \item avoid the $\mathcal{O}_\mathcal{C}$ because we can only close at most two variables.
+                \item avoid the $\mathcal{O}_\mathcal{I}$ because of the same reason.
+	        \end{itemize}
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Speeding up rule refinements}
+
+    \begin{block}{Perfect rule}
+        We stop adding atoms when the PCA confidence is 100\%
+	\end{block}
+
+    \begin{block}{Simplyfing projection queries}
+        When a new dangling atom is added.
+	\end{block}
 
 \end{frame}
 
@@ -203,7 +280,10 @@
 
 \begin{frame}{Conclusions}
 	\begin{itemize}
-   		\item ToDo
+   		\item Further work:
+	    \begin{itemize}
+   		    \item Make a Python implementation.
+	    \end{itemize}
 	\end{itemize}
 \end{frame}
 
