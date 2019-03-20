@@ -276,6 +276,45 @@
 
 \end{frame}
 
+\begin{frame}{Speeding up the confidence evaluation}
+
+    \begin{block}{}
+        A \textbf{major change} in AMIE+ 
+	\end{block}
+
+    \begin{block}{Approximate the value of PCA confidence}
+	\end{block}
+
+    \begin{equation}
+        \label{eq:approx_stand_conf}
+        \widehat{conf}_{pca}(R) = \dfrac{supp(R)}{\widehat{d}_{pca}(R)}\,,
+    \end{equation}
+
+\end{frame}
+
+\begin{frame}{When to use approximation?}
+    % in the paper, intermediate values = existentially quantified variables
+    \begin{block}{}
+        Only when the head variables $x$ and $y$ are \textit{chained}
+        in the body by intermediate variables:
+	\end{block}
+    % ToDo: Improve with tikz
+    \begin{equation}
+        \label{eq:candidate_for_approx}
+        r_1(x, z_1) \land r_2(z_1, z_2) \land \ldots \land r_n(z_{n-1}, y) \implies r_h(x, y)\,,
+    \end{equation}
+
+    e.g.,
+
+    \begin{equation}
+        directed(x, y) \land hasActor(y, z) \implies isMarried(x, y)
+    \end{equation}
+
+\end{frame}
+
+\begin{frame}{Compute the approximation}
+\end{frame}
+
 \section{Conclusions}
 
 \begin{frame}{Conclusions}

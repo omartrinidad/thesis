@@ -18,6 +18,7 @@ Thesis Project
 }
 
 \author{Omar Trinidad Guti\'errez M\'endez}
+%\institute{Informatik IV, Universitaet Bonn,}
 
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
@@ -650,18 +651,58 @@ So, we can \textbf{simplify the projection query} ignoring the added atom.
 
 \subsection{Speeding up confidence evaluation through confidence approximation}
 
-Some \textit{intuitevely bad} rules can lead to expensive confidence
-calculation. To overcome this problem, a \textbf{confidence approximation}
-technique was proposed.
+\textit{Intuitevely bad} rules can lead to expensive confidence calculation. To
+overcome this problem, a \textbf{confidence approximation} technique was
+proposed.
+
+There are some caveats, to take into account, when calculating an approximation:
+
+\begin{itemize}
+    \item Prunning good rules and
+    \item few gaining, that is, computing approximation in cheap calculations.
+\end{itemize}
+
+Rules with a large number of bindings are the ones where we want to use the
+confidence approximation.
+
+\begin{equation}
+    \label{eq:approx_stand_conf}
+    \widehat{conf}_{pca}(R) = | dom(\body) \cap dom(r_h) | \cdot \# y_{per\ x}\,,
+\end{equation}
+
+Notice that there are two terms:
+
+\begin{itemize}
+    \item $| dom(\body) \cap dom(r_h) |$ and
+    \item $\#y_{per\ x}$
+\end{itemize}
+
+In the first term, we simplify $dom(\body)$ to $dom(r_1)$, so we finish with
+something like this: 
+
+\begin{equation}
+dom(r_1) \cap dom(r_h)\,,
+\end{equation}
+
+\noindent which for readability is rewritten as
+
+\begin{equation}
+    ov_{dd}(r_1, r_h)\,.
+\end{equation}
+
+The second term is more complex to explain will reshape the formula.
+
+\begin{equation}
+    \label{eq:approx_stand_conf_general}
+    \widehat{conf}_{pca}(R) = \dfrac{ov_{dd}(r_1, r_h)}{fun(r_1)}
+    \times
+    \prod_{i=2}^{n} \dfrac{ov_{rd}(r_{i-1}, r_i)}{|rng(r_{i-1})|} \cdot \dfrac{ifun(r_i))}{fun(r_i)}  
+\end{equation}
 
 \section{SANSA Stack}
 % Tikz figures for SANSA stack.
 
-SANSA~\cite{lehmann-2017-sansa-iswc} is a platform whose purpose is\ldots
-
-$\K$
-
-A similar work to SANSA is S2RDF~\cite{schatzle2016s2rdf}.
+SANSA~\cite{lehmann-2017-sansa-iswc} is a platform whose purpose is\ldots A similar work to SANSA is S2RDF~\cite{schatzle2016s2rdf}.
 
 \bibliographystyle{plain}
 \bibliography{notes}
