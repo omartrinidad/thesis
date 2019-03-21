@@ -10,7 +10,7 @@
 % https://arxiv.org/abs/cs/0206023
 
 \title{
-Distributed AMIE+\\
+AMIE+\\
 \large
 Preliminary Notes\\
 of the\\
@@ -52,15 +52,14 @@ Thesis Project
 \section{Introduction}
 
 Knowledge bases (KB) have the purpose of representing and store knowledge in a
-
 machine-readable format. These databases are populated with entities and facts.
 
-Some well-known KBs are DBpedia~\cite{dbpedia-swj},
-NELL, YAGO~\cite{suchanek2007yago}, or Freebase~\cite{bollacker2008freebase}. A
-usual task executed in these databases is mining logical rules (Horn rules), that is, find
-unknown relationships between entities.
+Some well-known KBs are DBpedia~\cite{dbpedia-swj}, NELL,
+YAGO~\cite{suchanek2007yago}, or Freebase~\cite{bollacker2008freebase}.
 
-Some reasons why we want to obtain logical rules are
+A usual task executed in these databases is mining logical rules (Horn rules), that is, find
+unknown relationships between entities. Some reasons why we want to obtain
+logical rules are
 
 \begin{itemize}
     \item Obtaining new facts.
@@ -69,7 +68,7 @@ Some reasons why we want to obtain logical rules are
     \item Find especial relationships
 \end{itemize}
 
-However,  these databases are designed under the idea of Open World Assumption
+However, these databases are designed under the idea of Open World Assumption
 (OWA), that means, if the database does not contain a fact, we are not assuming
 that this fact is false, as happens under the Closed World Assumption (CWA).
 
@@ -574,21 +573,21 @@ another query.
     \label{fig:select_distinct}
 \end{figure}
 
-\noindent \textbf{Count}: 
+\noindent \textbf{Count}:
 
 \noindent \textbf{Count projection}: With this type of query we determine the
 relations and instances for new atoms in the refinement phase. The flowchart is
-shown in Fig.~\ref{fig:select_distinct}. 
+shown in Fig.~\ref{fig:select_distinct}.
 
 As input, we have a selection variable $x$, a projection atom $R(X, Y)$ or $H$ that is
 linked to a conjuctive query, we also have a threshold $k$ and the knowledge
-base. 
+base.
 
 A hash table $map$ is initialized and the variable $q$ stores the atoms.
 
 We verify that $x$ is present in the projection atom.
 
-If it is present. We go through the instantiations of $H$, and check if the 
+If it is present. We go through the instantiations of $H$, and check if the
 
 If it is not present.
 
@@ -599,7 +598,7 @@ If it is not present.
     }
     \caption[\textsc{Count Projection} algorithm.]
     {\textsc{Count Projection} algorithm.
-        \newline \newline 
+        \newline \newline
     }
     \label{fig:select_distinct}
 \end{figure}
@@ -626,7 +625,7 @@ are applied. The first case is related to the \textbf{maximum rule length}:
         non-closed rule.
     \item With the same rule and having more than two non-closed variables:
         \begin{itemize}
-            \item We avoid the closing atom operator $\mathcal{O}_\mathcal{C}$ 
+            \item We avoid the closing atom operator $\mathcal{O}_\mathcal{C}$
                 because we can only close at most two variables.
             \item We avoid the instantiation operator $\mathcal{O}_\mathcal{I}$
                 because of the same reason.
@@ -670,39 +669,52 @@ confidence approximation.
     \widehat{conf}_{pca}(R) = | dom(\body) \cap dom(r_h) | \cdot \# y_{per\ x}\,,
 \end{equation}
 
-Notice that there are two terms:
-
-\begin{itemize}
-    \item $| dom(\body) \cap dom(r_h) |$ and
-    \item $\#y_{per\ x}$
-\end{itemize}
-
 In the first term, we simplify $dom(\body)$ to $dom(r_1)$, so we finish with
-something like this: 
+something like this:
 
-\begin{equation}
-dom(r_1) \cap dom(r_h)\,,
-\end{equation}
+\begin{equation*}
+    dom(r_1) \cap dom(r_h)\,,
+\end{equation*}
 
 \noindent which for readability is rewritten as
 
-\begin{equation}
+\begin{equation*}
     ov_{dd}(r_1, r_h)\,.
-\end{equation}
+\end{equation*}
 
-The second term is more complex to explain will reshape the formula.
+\noindent We preferably see the second term
+
+\begin{equation*}
+    \#y_{per\ x}
+\end{equation*}
+
+\noindent as
+
+\begin{equation*}
+    \#{z_1}_{per\ x} \times \#{z_2}_{per\ z_1} \times \ldots \times \#y_{per\ z_n}\,.
+\end{equation*}
+
+\noindent That is, we traverse from the most to the least functional variable.
+The first term can be seen as:
+
+\begin{equation*}
+    \dfrac{1}{fun(r_1)}\,,
+\end{equation*}
+
+\noindent and from the second variable the terms can be seen as:
+
+\begin{equation*}
+    \dfrac{1}{fun(r_2)} \cdot \dfrac{1}{ifun(r_2)} \,,
+\end{equation*}
+
+So, joining everything, the final formula can be seen as:
 
 \begin{equation}
     \label{eq:approx_stand_conf_general}
     \widehat{conf}_{pca}(R) = \dfrac{ov_{dd}(r_1, r_h)}{fun(r_1)}
     \times
-    \prod_{i=2}^{n} \dfrac{ov_{rd}(r_{i-1}, r_i)}{|rng(r_{i-1})|} \cdot \dfrac{ifun(r_i))}{fun(r_i)}  
+    \prod_{i=2}^{n} \dfrac{ov_{rd}(r_{i-1}, r_i)}{|rng(r_{i-1})|} \cdot \dfrac{ifun(r_i))}{fun(r_i)}
 \end{equation}
-
-\section{SANSA Stack}
-% Tikz figures for SANSA stack.
-
-SANSA~\cite{lehmann-2017-sansa-iswc} is a platform whose purpose is\ldots A similar work to SANSA is S2RDF~\cite{schatzle2016s2rdf}.
 
 \bibliographystyle{plain}
 \bibliography{notes}
