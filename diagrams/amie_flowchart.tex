@@ -1,23 +1,4 @@
-% -------------------------------------------------
-% Set up a new layer for the debugging marks, and make sure it is on
-% top
-% this is a good example: https://tex.stackexchange.com/questions/254136/how-do-i-fix-spacing-on-paths-for-a-nested-tikz-flowchart
-
-\pgfdeclarelayer{marx}
-\pgfsetlayers{main,marx}
-
-
-\begin{tikzpicture}[%
-    >=triangle 60,              % Nice arrows; your taste may be different
-    start chain=going below,    % General flow is top-to-bottom
-    node distance=4mm and 10mm, % Global setup of box spacing
-    every join/.style={norm},   % Default linetype for connecting boxes
-    ]
-
-{\small\ttfamily\selectfont
-% -------------------------------------------------
-% Start by placing the nodes
-% Use join to connect a node to the previous one a
+\input{diagrams/open.tex}
 
 \node [term] () {
     KB $\mathcal{K}$, knowledge base;\\
@@ -25,16 +6,20 @@
     $maxLen$, size of rules;\\
     $minConf$, threshold in the confidence\\
 };
+
 \node [proc, join] () {
     out = $\langle\rangle$ \\
     q = [$r_1(x, y)$, $r_2(x, y)$,\ldots, $r_m(x,y)$]
 };
+
 \node [diam, join] (is_empty) {
     $\lnot q.isEmpty()$
 };
-\node [proc_small, join] () {
+
+\node [proc_small, join] (p6) {
     r = q.dequeue()
 };
+
 \node [diam_small, font={\small}, join] (accepted_for_output) {
     AcceptedForOutput(r, out, minConf)
 };
@@ -99,5 +84,4 @@
 %\node [notes, right of=check] {Check if the rules are pruned (by the head coverage) and duplicated};
 %\node [notes, right of=check_max_len] {Check if the rule exceeds the maximum number of atoms};
 
-}
-\end{tikzpicture}
+} \end{tikzpicture}

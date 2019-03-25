@@ -5,10 +5,10 @@ slides=main
 # ToDo: create an ´all´ command.
 
 pdf:
-	pdflatex ${archivo}
+	pdflatex --shell-escape --enable-write18 ${archivo}
 	bibtex ${biblio}
-	pdflatex ${archivo}
-	pdflatex ${archivo}
+	pdflatex --shell-escape --enable-write18 ${archivo}
+	pdflatex --shell-escape --enable-write18 ${archivo}
 
 read:
 	evince ${archivo}.pdf &

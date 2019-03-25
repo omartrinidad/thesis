@@ -1,0 +1,14 @@
+\pgfdeclarelayer{marx}
+\pgfsetlayers{main,marx}
+
+\begin{tikzpicture}[%
+    >=triangle 60,              % Nice arrows; your taste may be different
+    start chain=going below,    % General flow is top-to-bottom
+    node distance=4mm and 10mm, % Global setup of box spacing
+    every join/.style={norm},   % Default linetype for connecting boxes
+    ]
+
+{\small\ttfamily\selectfont
+% -------------------------------------------------
+% Start by placing the nodes
+% Use join to connect a node to the previous one a

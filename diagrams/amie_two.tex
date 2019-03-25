@@ -1,0 +1,16 @@
+\input{diagrams/open.tex}
+
+\node [proc_small, join] (p6) {
+    r = q.dequeue()
+};
+\pause
+
+\node [diam_small, font={\small}, join, fill=gray] (accepted_for_output) {
+    AcceptedForOutput(r, out, minConf)
+};
+\node [proc_small, join, fill=gray] (p6) {
+    out.add(r)
+};
+
+
+} \end{tikzpicture}

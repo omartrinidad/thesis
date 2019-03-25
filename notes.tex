@@ -30,7 +30,17 @@ Thesis Project
 \usepackage{floatrow}
 \usepackage{float}
 \usepackage{caption}
-%\usepackage{venndiagram}
+
+\usepackage{tikz}
+    \usetikzlibrary{shapes.geometric, backgrounds, calc}
+    \usetikzlibrary{arrows}
+    \usetikzlibrary{arrows.meta}
+    \usetikzlibrary{positioning}
+    \usetikzlibrary{chains}
+
+\usepackage{venndiagram}
+\usepackage{subfig}
+\usepackage[font=small]{caption}
 
 \newcommand{\triple}[3]{{\itshape\textless#1\textgreater} {\bfseries#2} {\itshape\textless#3\textgreater}}
 \newcommand{\instantiation}[2]{{\itshape#1}{$\implies$}{\itshape#2}}
@@ -44,6 +54,8 @@ Thesis Project
 
 % Begin tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{tikz_additions.tex}
+%\usetikzlibrary{external}
+%    \tikzexternalize[prefix=tikz/]
 % End tikz section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -374,17 +386,13 @@ AMIE has better interpretability, which is a crucial in the Data Science world.
 So, with AMIE, it is possible to mine logical rules where there is a
 correlation in the data.
 
-\section{AMIE+ algorithm}
+\section{AMIE algorithm}
 
 % The purpose of AMIE is to generate Horn rules.
 %\subsubsection{Completeness}
 %Lets say that $KB*$ contains every fact of the world.
 
-As mentioned before, AMIE+ uses the Partial Completeness Assumption (PCA) to
-guess the counter-examples, it also uses pruning strategies and approximations
-that allow exploring the search space more efficiently.
-
-As seen in the Figure~\ref{fig:amie_flowchart}, AMIE+ receives four parameters,
+As seen in the Figure~\ref{fig:amie}, AMIE+ receives four parameters,
 the knowledge base KB $\mathcal{K}$, the minimum head coverage $minHC$, the
 maximum size of the rules $maxLen$, and the threshold in the confidence
 $minConf$. The queue $q$ is initialized  with all the head atoms $r(x,y)$, in
@@ -407,8 +415,7 @@ is executed.
     {\resizebox{!}{0.90\textheight}{%
             \input{diagrams/amie_flowchart.tex}
         }}
-    {\caption{Flowchart of \textsc{AMIE+} algorithm}}
-\label{fig:amie_flowchart}
+    {\caption{Flowchart of \textsc{AMIE+} algorithm}\label{fig:amie}}
 \end{figure}
 \clearpage
 }
@@ -695,10 +702,10 @@ something like this:
 \end{equation*}
 
 \noindent That is, we traverse from the most to the least functional variable.
-The first term can be seen as:
+In the chain, the first term can be seen as:
 
 \begin{equation*}
-    \dfrac{1}{fun(r_1)}\,,
+    \dfrac{ov_{rd}(directed, hasActor)}{|rng(directed)| \times fun(directed)}
 \end{equation*}
 
 \noindent and from the second variable the terms can be seen as:
@@ -709,12 +716,25 @@ The first term can be seen as:
 
 So, joining everything, the final formula can be seen as:
 
+% not clear why
 \begin{equation}
     \label{eq:approx_stand_conf_general}
     \widehat{conf}_{pca}(R) = \dfrac{ov_{dd}(r_1, r_h)}{fun(r_1)}
     \times
     \prod_{i=2}^{n} \dfrac{ov_{rd}(r_{i-1}, r_i)}{|rng(r_{i-1})|} \cdot \dfrac{ifun(r_i))}{fun(r_i)}
 \end{equation}
+
+\section{ToDo: Distributed implementation}
+
+\subsection{Technological stack}
+
+We use Hadoop, Spark, the SANSA stack, and Scala.
+
+\subsection{SANSA Stack}
+% Tikz figures for SANSA stack.
+
+SANSA~\cite{lehmann-2017-sansa-iswc} is a platform whose purpose is\ldots A
+similar work to SANSA is S2RDF~\cite{schatzle2016s2rdf}.
 
 \bibliographystyle{plain}
 \bibliography{notes}

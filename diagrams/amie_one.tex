@@ -1,0 +1,22 @@
+\input{diagrams/open.tex}
+
+\node [term] () {
+    KB $\mathcal{K}$, knowledge base;\\
+    $minHC$, minimum head coverage;\\
+    $maxLen$, size of rules;\\
+    $minConf$, threshold in the confidence\\
+};
+\node [proc, join] () {
+    out = $\langle\rangle$ \\
+    q = [$r_1(x, y)$, $r_2(x, y)$,\ldots, $r_m(x,y)$]
+};
+\pause
+\node [diam, join, fill=gray] (is_empty) {
+    $\lnot q.isEmpty()$
+};
+\pause
+\node [proc_small, join] (p6) {
+    r = q.dequeue()
+};
+
+} \end{tikzpicture}

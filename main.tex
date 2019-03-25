@@ -13,6 +13,13 @@
 \usepackage{tcolorbox}
 \usepackage{booktabs}
 
+\usepackage{tikz}
+    \usetikzlibrary{shapes.geometric, backgrounds, calc}
+    \usetikzlibrary{arrows}
+    \usetikzlibrary{arrows.meta}
+    \usetikzlibrary{positioning}
+    \usetikzlibrary{chains}
+
 \newcommand{\K}{\mathcal{K}}
 \newcommand{\KB}{KB $\mathcal{K}$}
 
@@ -183,30 +190,55 @@
 %	\end{itemize}
 %\end{frame}
 
-%\section{AMIE}
-%\begin{frame}{AMIE algorithm}
-%	\begin{itemize}
-%   		\item Association Rule Mining under Incomplete Evidence (AMIE) is one \textit{of several} algorithms used to mine logic rules in KB.
-%        \item It is a similar idea to the association rule learning.
-%        \item \textbf{Let’s take a look on it}.
-%        \item Use language bias (or constraints) to reduce the size of the search space.
-%        \begin{itemize}
-%        \item
-%        \end{itemize}
-%	\end{itemize}
-%\end{frame}
 
 \section{AMIE}
-\begin{frame}{AMIE vs ILP}
-    % ToDo: Add color, symbols, bold
-    \begin{tabular}{ l | c | c }
-        \toprule
-        & AMIE & ILP \\
-        \midrule
-        Counter-examples & Works in the absense of them & Works with them \\
-        Scalability      & Yes  & No\\
-        \bottomrule
-    \end{tabular}
+
+\begin{frame}{AMIE algorithm}
+	\begin{itemize}
+   		\item Association Rule Mining under Incomplete Evidence (AMIE) is one 
+            \textit{of several} algorithms used to mine logic rules in KBs.
+	    \begin{itemize}
+            \item It is a similar idea to the association rule learning.
+        \end{itemize}
+        \item \textbf{Let’s take a look on it}.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{AMIE}
+\begin{columns}
+
+\begin{column}{0.4\textwidth}
+	\begin{itemize}
+        \item Initialize $q$ and $out$.
+        \item While the queue of rules $q$ is not empty\ldots
+        \item We dequeue $q$
+	\end{itemize}
+\end{column}
+
+\begin{column}{0.6\textwidth}
+    \resizebox{!}{0.8\textwidth}{%
+        \input{diagrams/amie_one.tex}
+    }
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{AMIE}
+\begin{columns}
+
+\begin{column}{0.4\textwidth}
+	\begin{itemize}
+        \item If the rule $r$ meets the criteria is added to $out$
+	\end{itemize}
+\end{column}
+
+\begin{column}{0.6\textwidth}
+    \resizebox{!}{0.8\textwidth}{%
+        \input{diagrams/amie_two.tex}
+    }
+\end{column}
+\end{columns}
 \end{frame}
 
 \subsection{In-memory database and queries}
@@ -317,13 +349,25 @@
 
 \section{Conclusions}
 
+\begin{frame}{AMIE vs ILP}
+    % ToDo: Add color, symbols, bold
+    \begin{tabular}{ l | c | c }
+        \toprule
+        & AMIE & ILP \\
+        \midrule
+        Counter-examples & Works in the absense of them & Works with them \\
+        Scalability      & Yes  & No\\
+        \bottomrule
+    \end{tabular}
+\end{frame}
+
 \begin{frame}{Conclusions}
-	\begin{itemize}
-   		\item Further work:
-	    \begin{itemize}
-   		    \item Make a Python implementation.
-	    \end{itemize}
-	\end{itemize}
+%	\begin{itemize}
+%   		\item Further work:
+%	    \begin{itemize}
+%   		    \item Make a Python implementation.
+%	    \end{itemize}
+%	\end{itemize}
 \end{frame}
 
 \end{document}
