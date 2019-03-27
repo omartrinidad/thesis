@@ -70,18 +70,5 @@
 
 \draw[->] (accepted_for_output.east) -- (c8) |- (check_max_len.north);
 
-%\draw[->] (check.east) -- ++(0.66,0) -- ++(0,-0.05) -- node [near start] {no} ++(0,-3.0) -- ++(-7,0) -- ++(0, 7) -- (p9.north);
-%\draw[->] (is_empty.east)  -- ++(0,0.0) -- ++(2.35,0) -- node [near start] {no} ++(0,-22.3) -- ++(-4,0) -- (return.north);
-%\draw[->] (accepted_for_output.east)  -- ++(0,0.0) -- ++(1.35,0) -- node [near start] {no} ++(0,-3.3) -- (check_max_len.north);
-%\draw[->] (check_max_len.east)  -- ++(0,0.0) -- ++(1.35,0) -- node [near start] {no} ++(0, -12.5) -- ++(-12,0) -- ++(0, 21) -- (is_empty.north);
-
-% notes
-%\node [notes, right of=q] {q is a queue of rules containing\\all head atoms (size 1)};
-%\node [notes, right of=is_empty] {Iterate until the queue is empty};
-%\node [notes, right of=refinement] {The refinement is the expansion of the rule,\\to produce a set of new rules};
-%\node [notes, right of=dequeue] {Dequeue the rules};
-%\node [notes, right of=accepted_for_output] {Decide whether to output a rule,\\check for closeness and connectedness,\\among other things, see algorithm 2};
-%\node [notes, right of=check] {Check if the rules are pruned (by the head coverage) and duplicated};
-%\node [notes, right of=check_max_len] {Check if the rule exceeds the maximum number of atoms};
 
 } \end{tikzpicture}

@@ -135,7 +135,7 @@
 %    \end{itemize}
 %\end{frame}
 
-\subsection{Confidence and support}
+\subsection{Measures of confidence and significance}
 
 \begin{frame}{Standard Confidence}
 \begin{equation}
@@ -155,6 +155,13 @@
 \end{equation}
 \end{frame}
 
+\subsection{Head coverage}
+\begin{frame}{Head coverage}
+    \begin{itemize}
+       \item 
+    \end{itemize}
+\end{frame}
+
 \subsection{Confidence evaluation}
 \begin{frame}{Confidence evaluation}
     \begin{itemize}
@@ -162,12 +169,6 @@
     \end{itemize}
 \end{frame}
 
-\subsection{Rule refinement}
-\begin{frame}{Rule refinement}
-    \begin{itemize}
-       \item 
-    \end{itemize}
-\end{frame}
 
 %\begin{frame}{Basic idea of the Mining Process}
 %	\begin{itemize}
@@ -175,6 +176,7 @@
 %        %    \textit{of several} algorithms used to mine logic rules in KB.
 %        \item The idea is similar to the association rule learning.
 %        % \item \textbf{Let’s take a look on it}.
+
 %        \item Use language bias (or constraints) to reduce the size of the search space.
 %            \begin{itemize}
 %                \item We ignore \textit{unconnected} rules:
@@ -193,6 +195,7 @@
 
 \section{AMIE}
 
+\subsection{AMIE algorithm}
 \begin{frame}{AMIE algorithm}
 	\begin{itemize}
    		\item Association Rule Mining under Incomplete Evidence (AMIE) is one 
@@ -207,42 +210,81 @@
 \begin{frame}{AMIE}
 \begin{columns}
 
-\begin{column}{0.4\textwidth}
+\begin{column}{0.5\textwidth}
 	\begin{itemize}
-        \item Initialize $q$ and $out$.
         \item While the queue of rules $q$ is not empty\ldots
-        \item We dequeue $q$
+        \item We dequeue a rule $r$ from $q$.
+	    \begin{itemize}
+            \item If $r$ meet the criteria is added to $out$.
+	    \end{itemize}
 	\end{itemize}
 \end{column}
 
-\begin{column}{0.6\textwidth}
-    \resizebox{!}{0.8\textwidth}{%
+\begin{column}{0.5\textwidth}
+    \resizebox{0.8\textwidth}{!}{%
         \input{diagrams/amie_one.tex}
     }
 \end{column}
 \end{columns}
 \end{frame}
 
-
 \begin{frame}{AMIE}
 \begin{columns}
-
-\begin{column}{0.4\textwidth}
+\begin{column}{0.5\textwidth}
 	\begin{itemize}
-        \item If the rule $r$ meets the criteria is added to $out$
+        \item If the size of the rule $r$ is not bigger than $maxLen$:
+	    \begin{itemize}
+            \item We apply the rule refinement and get children rules $R(r)$.
+            \item For every refined rule $r_c$ in $R(r)$.
+	        \begin{itemize}
+                \item If $r_c$ is not in $q$ and that head coverage value is bigger than the threshold.
+                % ToDo: fix error about deep
+	            %\begin{itemize}
+                    \item Add $r_c$ to $q$.
+	            %\end{itemize}
+	        \end{itemize}
+	    \end{itemize}
 	\end{itemize}
 \end{column}
 
-\begin{column}{0.6\textwidth}
-    \resizebox{!}{0.8\textwidth}{%
+\begin{column}{0.5\textwidth}
+    \resizebox{0.8\textwidth}{!}{%
         \input{diagrams/amie_two.tex}
     }
 \end{column}
 \end{columns}
 \end{frame}
 
-\subsection{In-memory database and queries}
+\subsection{Output rules}
+\begin{frame}{Output rules}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+	\begin{itemize}
+        \item After dequeue the rules
+	\end{itemize}
+\end{column}
 
+\begin{column}{0.5\textwidth}
+    \resizebox{0.999\textwidth}{!}{%
+        \input{diagrams/accepted_for_output.tex}
+    }
+\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{Rule refinement}
+\begin{frame}{Rule refinement}
+    \begin{itemize}
+        \item To explore the search space three \textit{mining operators} are used:
+        \begin{enumerate}
+            \item 
+            \item 
+            \item 
+        \end{enumerate}
+    \end{itemize}
+\end{frame}
+
+\subsection{In-memory database and queries}
 \begin{frame}{In-memory database and queries}
 \begin{figure}
     \input{diagrams/db.tex}

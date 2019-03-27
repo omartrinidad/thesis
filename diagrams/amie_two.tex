@@ -1,16 +1,29 @@
 \input{diagrams/open.tex}
 
-\node [proc_small, join] (p6) {
-    r = q.dequeue()
+\node [diam_small, join] (check_max_len) {
+    len(r) < maxLen
 };
-\pause
-
-\node [diam_small, font={\small}, join, fill=gray] (accepted_for_output) {
-    AcceptedForOutput(r, out, minConf)
+\node [proc_small, join] (refinement) {
+    R(r) = Refine(r)
 };
-\node [proc_small, join, fill=gray] (p6) {
-    out.add(r)
+\node [diam_small, join] (R_is_empty) {
+    $r_c \in R(r)$
 };
 
+\node [diam_small, join] (check) {
+    hc($r_c$) $\geq$ minHC \& $r_c$ $\notin$ q
+};
+\node [proc_small, join] (p11) {
+    q.enqueue($r_c$)
+};
+
+% marks
+\node[coord_inner_inner, right= of check] (c0) {}; %\cmark{0}
+\node[coord_inner_inner, below=1cm of p11] (c1) {}; %\cmark{1}
+\node[coord_inner_inner, left=of p11] (c2) {}; %\cmark{2}
+\node[coord_inner_inner, left=of R_is_empty] (c3) {}; %\cmark{3}
+
+\draw[->] (check.east) -- (c0) |- (c1) -| (c3) -- (R_is_empty);
+\draw[dashed, -o] (p11.west) -- (c2);
 
 } \end{tikzpicture}
