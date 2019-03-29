@@ -397,15 +397,16 @@ minimum head coverage $minHC$, the maximum size of the rules $maxLen$, and the
 threshold in the confidence $minConf$. 
 
 A queue $q$ is initialized with all the head atoms $r(x,y)$, in the same way, a
-list $out$ is initialized to save the result. See the flowchart of the
-algorithm in figure~\ref{fig:amie}. 
+list $out$ is initialized to save the result. 
 
-Iteratively, the rules in $q$ are dequeued; the algorithms evaluates each rule
+Iteratively, the rules in $q$ are dequeued; the algorithm evaluates each rule
 to verify that are accepted for output (see~\ref{ssec:filter_output}), if so, it
 is added to the list $out$.
 
 When the lenght of the rule is below the $maxLen$ threshold, the refinement
 is executed. In the refinement process, 
+
+See the flowchart of the algorithm in figure~\ref{fig:amie}. 
 
 % consider this!
 % https://blogs.gnome.org/muelli/2011/04/perfectly-scale-an-image-to-the-rest-of-a-page-with-latex/
@@ -422,10 +423,32 @@ is executed. In the refinement process,
 \clearpage
 }
 
+\subsection{Filter the output}
+\label{ssec:filter_output}
+
+After dequeuing a rule $r$ from $q$ we filter those ones\ldots
+
+\begin{itemize}
+    \item that are not closed and not connected and whose confidence value is
+        below that the $minConf$ threshold (blue block in Fig~\ref{fig:accepted_for_output}),
+    %\item that has lower confidence than the ones stored in $out$
+    \item whose refinements $B_1 \land \ldots \land B_n \land B_{n+1} \implies H$
+        have equal or lower confidence than their parent
+        $B_1 \land \ldots \land B_n \implies H$ (red blocks)
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\resizebox{!}{0.50\textheight}{%
+    \input{diagrams/accepted_for_output.tex}
+}
+\caption{Diagram of the rule filtering.}
+\label{fig:accepted_for_output}
+\end{figure}
+
 \subsection{Refinement, rule expansion, mining operators}
 
 % traverse = crisscross
-
 The combination of conjunctions of atoms form a huge search space, which is
 impossible to explore. In AMIE, a set of \textbf{mining operators} is used to
 extend the rules iteratively and traverse the search space.
@@ -473,29 +496,6 @@ that are open.
 \begin{equation}
     r(X, Y) \in \{ r(x, w), r(y, w), r(w, x), r(w, y) \}\,.
 \end{equation}
-
-\subsection{Filter the output}
-\label{ssec:filter_output}
-
-After dequeuing a rule $r$ from $q$ we filter those ones\ldots
-
-\begin{itemize}
-    \item that are not closed and not connected and whose confidence value is
-        below that the $minConf$ threshold (blue block in Fig~\ref{fig:accepted_for_output}),
-    %\item that has lower confidence than the ones stored in $out$
-    \item whose refinements $B_1 \land \ldots \land B_n \land B_{n+1} \implies H$
-        have equal or lower confidence than their parent
-        $B_1 \land \ldots \land B_n \implies H$ (red blocks)
-\end{itemize}
-
-\begin{figure}[H]
-\centering
-\resizebox{!}{0.50\textheight}{%
-    \input{diagrams/accepted_for_output.tex}
-}
-\caption{Diagram of the rule filtering.}
-\label{fig:accepted_for_output}
-\end{figure}
 
 \subsection{In-memory database and queries}
 \label{ssec:in_memory_database}

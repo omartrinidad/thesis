@@ -10,23 +10,32 @@
     out = $\langle\rangle$ \\
     q = [$r_1(x, y)$, $r_2(x, y)$,\ldots, $r_m(x,y)$]
 };
+
 \node [diam, join] (is_empty) {
     $\lnot q.isEmpty()$
 };
 
-%\pause
-
-\node [proc_small, join] (p6) {
+\node [proc_small, join] (p1) {
     r = q.dequeue()
 };
 
-\node [diam_small, font={\small}, join] (accepted_for_output) {
+\node [diam_small, font={\small}, join] (output) {
     AcceptedForOutput(r, out, minConf)
 };
 
-\node [proc_small, join] (p6) {
+\node [proc_small, join] (last) {
     out.add(r)
 };
 
+\node [proc_small, right=5.333cm of last] (return) {return out};
+\node [proc_small, join] (end) {end};
+    \draw[->] (is_empty.east) -| (return);
+
+\node[coord_inner, below=1.333cm of last] (c1) {};
+
+\node[coord_inner, left=of c1] (c0) {};
+    \draw[dashed, ->] (c0) |- (is_empty);
+
+\draw[dashed, ->] (last) -- (c1);
 
 } \end{tikzpicture}
